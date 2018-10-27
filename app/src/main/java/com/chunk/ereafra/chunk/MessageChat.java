@@ -16,6 +16,12 @@ public class MessageChat {
         this.imageUrl = imageUrl;
     }
 
+    public MessageChat(String text, String name, String photoUrl, String imageUrl) {
+        this.text = text;
+        this.name = name;
+        this.photoUrl = photoUrl;
+        this.imageUrl = imageUrl;
+    }
     public MessageChat() {
     }
 
