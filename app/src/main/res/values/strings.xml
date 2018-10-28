@@ -3,4 +3,8 @@
     <string name="title_activity_sign_in">SignInActivity</string>
     <string name="sign_in">sign in</string>
     <string name="sign_out">sign out</string>
+    <string name="title_activity_navigate_chunk">NavigateChunk</string>
+    <string name="title_activity_new_chunk">New Chunk</string>
+    <string name="chunk_name">Hey! Make a title for the Chunk!  </string>
+    <string name="chunk_argument">Tell Me about your chunk!  </string>
 </resources>
