@@ -1,5 +1,6 @@
 package com.chunk.ereafra.chunk;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -22,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -47,6 +49,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.sql.Timestamp;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
@@ -55,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private static final String TAG = "MainActivity";
     public static final String FRIENDLY_MSG_LENGTH = "friendly_msg_length";
     public static final String MESSAGES_CHILD = "messages";
+    public static final String CHAT_CHILD = "chat";
     public static final int DEFAULT_MSG_LENGTH_LIMIT = 1000;
     private static final String LOADING_IMAGE_URL = "https://www.google.com/images/spin-32.gif";
     private static final int REQUEST_IMAGE = 2;
@@ -73,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private String mPhotoUrl;
 
     // attribute of the main activity
-    private Button mSendButton;
+    private ImageButton mSendButton;
     private RecyclerView mMessageRecyclerView;
     private LinearLayoutManager mLinearLayoutManager;
     private ProgressBar mProgressBar;
@@ -87,12 +92,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
         // create a parser between the json model in the database and a class
+
         SnapshotParser<MessageChat> parser = new SnapshotParser<MessageChat>() {
             @Override
             public MessageChat parseSnapshot(DataSnapshot dataSnapshot) {
                 MessageChat chatMessage = dataSnapshot.getValue(MessageChat.class);
                 if (chatMessage != null) {
                     chatMessage.setId(dataSnapshot.getKey());
+                    Log.d(TAG, "initializeFirebase() " + dataSnapshot.getKey());
                     // i guess that the ID is automatically added and set in the object
                 }
                 return chatMessage;
@@ -106,16 +113,30 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                         .build();
 
         mFirebaseAdapter = new FirebaseRecyclerAdapter<MessageChat, MessageViewHolder>(options) {
+
+            @Override
+            public int getItemViewType(int position) {
+                //Implement your logic here
+                MessageChat chat = this.getItem(position);
+                if (chat.getName().equals(mUsername))
+                    return 0;
+                else
+                    return 1;
+            }
+
             @NonNull
             @Override
             public MessageViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
                 LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
-                return new MessageViewHolder(inflater.inflate(R.layout.message_item, viewGroup, false));
+                MessageChat chat = this.getItem(i);
+                if (i == 0)
+                    return new MessageViewHolder(inflater.inflate(R.layout.my_message, viewGroup, false), true);
+                else
+                    return new MessageViewHolder(inflater.inflate(R.layout.message_item, viewGroup, false), false);
             }
 
-            @Override
-            protected void onBindViewHolder(final MessageViewHolder holder, int position, MessageChat message) {
-                mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+
+            public void bindOtherViewHolder(final MessageViewHolder holder, MessageChat message) {
                 if (message.getText() != null) {
                     holder.messageTextView.setText(message.getText());
                     holder.messageTextView.setVisibility(TextView.VISIBLE);
@@ -149,15 +170,23 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                     holder.messageTextView.setVisibility(TextView.GONE);
                 }
 
-                holder.messengerTextView.setText(message.getName());
-                if (message.getPhotoUrl() == null) {
-                    holder.messengerImageView.setImageDrawable(ContextCompat.getDrawable(MainActivity.this,
-                            R.drawable.ic_account_circle_black_36dp));
-                } else {
-                    Glide.with(MainActivity.this)
-                            .load(message.getPhotoUrl())
-                            .into(holder.messengerImageView);
+                if (!message.getName().equals(mUsername)) {
+                    holder.messengerTextView.setText(message.getName());
+                    if (message.getPhotoUrl() == null) {
+                        holder.messengerImageView.setImageDrawable(ContextCompat.getDrawable(MainActivity.this,
+                                R.drawable.ic_account_circle_black_36dp));
+                    } else {
+                        Glide.with(MainActivity.this)
+                                .load(message.getPhotoUrl())
+                                .into(holder.messengerImageView);
+                    }
                 }
+            }
+
+            @Override
+            protected void onBindViewHolder(@NonNull MessageViewHolder holder, int position, @NonNull MessageChat message) {
+                mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+                bindOtherViewHolder(holder, message);
             }
         };
 
@@ -234,7 +263,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             }
         });
 
-        mSendButton = (Button) findViewById(R.id.sendButton);
+        mSendButton = (ImageButton) findViewById(R.id.sendButton);
         mSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -305,22 +334,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         }
     }
 
-    public static class MessageViewHolder extends RecyclerView.ViewHolder {
-        TextView messageTextView;
-        ImageView messageImageView;
-        TextView messengerTextView;
-        CircleImageView messengerImageView;
-
-        public MessageViewHolder(View v) {
-            super(v);
-            messageTextView = (TextView) itemView.findViewById(R.id.messageTextView);
-            messageImageView = (ImageView) itemView.findViewById(R.id.messageImageView);
-            messengerTextView = (TextView) itemView.findViewById(R.id.messengerTextView);
-            messengerImageView = (CircleImageView) itemView.findViewById(R.id.messengerImageView);
-        }
-    }
-
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -346,7 +359,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                                                         .getReference(mFirebaseUser.getUid())
                                                         .child(key)
                                                         .child(uri.getLastPathSegment());
-
+                                        Log.d(TAG, " onActivityResult USERID: " + mFirebaseUser.getUid());
+                                        Log.d(TAG, " onActivityResult KEY: " + key);
+                                        Log.d(TAG, " onActivityResult URI: " + uri.getLastPathSegment());
                                         putImageInStorage(storageReference, uri, key);
                                     } else {
                                         Log.w(TAG, "Unable to write message to database.",
@@ -355,6 +370,24 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                                 }
                             });
                 }
+            }
+        }
+    }
+
+    public static class MessageViewHolder extends RecyclerView.ViewHolder {
+        TextView messageTextView;
+        ImageView messageImageView;
+
+        TextView messengerTextView;
+        CircleImageView messengerImageView;
+
+        public MessageViewHolder(View v, Boolean isMineMessage) {
+            super(v);
+            messageTextView = (TextView) itemView.findViewById(R.id.messageTextView);
+            messageImageView = (ImageView) itemView.findViewById(R.id.messageImageView);
+            if (!isMineMessage) {
+                messengerTextView = (TextView) itemView.findViewById(R.id.messengerTextView);
+                messengerImageView = (CircleImageView) itemView.findViewById(R.id.messengerImageView);
             }
         }
     }

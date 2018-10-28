@@ -3,6 +3,7 @@ package com.chunk.ereafra.chunk;
 public class MessageChat {
 
     private String id;
+    private String idChat;
     private String text;
     private String name;
     private String photoUrl;
