@@ -17,7 +17,7 @@
         android:theme="@style/AppTheme">
 
 
-        <activity android:name=".NewChunk">
+        <activity android:name=".NavigateChunk">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -29,10 +29,13 @@
             android:label="@string/title_activity_sign_in"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".NavigateChunk"
-            android:label="@string/title_activity_navigate_chunk"
+            android:name=".NewChunk"
+            android:label="@string/title_activity_new_chunk"
             android:theme="@style/AppTheme.NoActionBar" />
-
+        <activity
+            android:name=".ChunkChatActivity"
+            android:label="@string/title_activity_chunk_chat_activity"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

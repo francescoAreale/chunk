@@ -1,6 +1,5 @@
 package com.chunk.ereafra.chunk;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -21,7 +20,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -49,14 +47,12 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import java.sql.Timestamp;
-
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
+public class ChunkChatActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
 
     public static final String ANONYMOUS = "anonymous";
-    private static final String TAG = "MainActivity";
+    private static final String TAG = "ChunkChatActivity";
     public static final String FRIENDLY_MSG_LENGTH = "friendly_msg_length";
     public static final String MESSAGES_CHILD = "messages";
     public static final String CHAT_CHILD = "chat";
@@ -173,10 +169,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 if (!message.getName().equals(mUsername)) {
                     holder.messengerTextView.setText(message.getName());
                     if (message.getPhotoUrl() == null) {
-                        holder.messengerImageView.setImageDrawable(ContextCompat.getDrawable(MainActivity.this,
+                        holder.messengerImageView.setImageDrawable(ContextCompat.getDrawable(ChunkChatActivity.this,
                                 R.drawable.ic_account_circle_black_36dp));
                     } else {
-                        Glide.with(MainActivity.this)
+                        Glide.with(ChunkChatActivity.this)
                                 .load(message.getPhotoUrl())
                                 .into(holder.messengerImageView);
                     }

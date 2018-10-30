@@ -7,7 +7,7 @@
 
     android:paddingTop="@dimen/activity_vertical_margin"
 
-    tools:context="com.chunk.ereafra.chunk.MainActivity">
+    tools:context="com.chunk.ereafra.chunk.ChunkChatActivity">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/messageRecyclerView"
