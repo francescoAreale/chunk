@@ -233,8 +233,8 @@ public class NewChunk extends AppCompatActivity {
                                             .getReference(mFirebaseUser.getUid())
                                             .child(key)
                                             .child(imagePicURI.getLastPathSegment());
-                            putImageInStorage(storageReference, imagePicURI, key);
-                            createChatOnFirebase(key);
+                            putImageInStorage(storageReference, imagePicURI, key, newChunk);
+                            createChatOnFirebase(key, newChunk);
 
                         } else {
                             Log.w(TAG, "Unable to write message to database.",
@@ -244,7 +244,7 @@ public class NewChunk extends AppCompatActivity {
                 });
     }
 
-    public void createChatOnFirebase(final String idChunk) {
+    public void createChatOnFirebase(final String idChunk, final Chunk newChunk) {
         Chat newChat = new Chat(null, "No Message Until Now", (System.currentTimeMillis() / 1000));
         mFirebaseDatabaseReference.child(CHAT_TITLE).push()
                 .setValue(newChat, new DatabaseReference.CompletionListener() {
@@ -253,7 +253,6 @@ public class NewChunk extends AppCompatActivity {
                                            DatabaseReference databaseReference) {
                         if (databaseError == null) {
                             String key = databaseReference.getKey();
-                            Chunk newChunk = createNewChunk();
                             newChunk.setChatOfChunkID(key);
                             mFirebaseDatabaseReference.child(CHUNK_TITLE).child(idChunk)
                                     .setValue(newChunk);
@@ -266,7 +265,7 @@ public class NewChunk extends AppCompatActivity {
 
     }
 
-    private void putImageInStorage(final StorageReference storageReference, Uri uri, final String key) {
+    private void putImageInStorage(final StorageReference storageReference, Uri uri, final String key, final Chunk newChunk) {
         storageReference.putFile(uri).continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
             @Override
             public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
@@ -280,7 +279,6 @@ public class NewChunk extends AppCompatActivity {
             public void onComplete(@NonNull Task<Uri> task) {
                 if (task.isSuccessful()) {
                     Uri downUri = task.getResult();
-                    Chunk newChunk = createNewChunk();
                     newChunk.setImage(downUri.toString());
                     mFirebaseDatabaseReference.child(CHUNK_TITLE).child(key)
                             .setValue(newChunk);
