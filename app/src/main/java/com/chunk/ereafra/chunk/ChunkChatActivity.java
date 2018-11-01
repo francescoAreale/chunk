@@ -63,7 +63,7 @@ public class ChunkChatActivity extends AppCompatActivity implements GoogleApiCli
     // google
     private GoogleApiClient mGoogleApiClient;
 
-    // Firebase instance variables
+    // FirebaseUtils instance variables
     private FirebaseAuth mFirebaseAuth;
     private FirebaseUser mFirebaseUser;
     private DatabaseReference mFirebaseDatabaseReference;
@@ -224,7 +224,7 @@ public class ChunkChatActivity extends AppCompatActivity implements GoogleApiCli
 
     /* This code initially adds all existing messages
     and then listens for new child entries under
-     the messages path in the Firebase Realtime Database*/
+     the messages path in the FirebaseUtils Realtime Database*/
 
     public void initializeMainActivity() {
         // Initialize ProgressBar and RecyclerView.
@@ -313,7 +313,7 @@ public class ChunkChatActivity extends AppCompatActivity implements GoogleApiCli
         //initialize the main activity with
         initializeMainActivity();
 
-        // Initialize Firebase Auth
+        // Initialize FirebaseUtils Auth
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseUser = mFirebaseAuth.getCurrentUser();
 
@@ -355,9 +355,6 @@ public class ChunkChatActivity extends AppCompatActivity implements GoogleApiCli
                                                         .getReference(mFirebaseUser.getUid())
                                                         .child(key)
                                                         .child(uri.getLastPathSegment());
-                                        Log.d(TAG, " onActivityResult USERID: " + mFirebaseUser.getUid());
-                                        Log.d(TAG, " onActivityResult KEY: " + key);
-                                        Log.d(TAG, " onActivityResult URI: " + uri.getLastPathSegment());
                                         putImageInStorage(storageReference, uri, key);
                                     } else {
                                         Log.w(TAG, "Unable to write message to database.",
@@ -410,7 +407,6 @@ public class ChunkChatActivity extends AppCompatActivity implements GoogleApiCli
                 }
             }
         });
-
     }
 
     @Override

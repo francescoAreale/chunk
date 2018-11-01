@@ -33,10 +33,10 @@ public class SignInActivity extends AppCompatActivity implements
 
     private GoogleApiClient mGoogleApiClient;
 
-    // Firebase instance variables
+    // FirebaseUtils instance variables
     private FirebaseAuth mFirebaseAuth;
 
-// Firebase instance variables
+// FirebaseUtils instance variables
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,7 +93,7 @@ public class SignInActivity extends AppCompatActivity implements
         if (requestCode == RC_SIGN_IN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             if (result.isSuccess()) {
-                // Google Sign-In was successful, authenticate with Firebase
+                // Google Sign-In was successful, authenticate with FirebaseUtils
                 GoogleSignInAccount account = result.getSignInAccount();
                 firebaseAuthWithGoogle(account);
             } else {
