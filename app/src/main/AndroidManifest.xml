@@ -15,8 +15,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
-
         <activity android:name=".NavigateChunk">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -36,6 +34,10 @@
             android:name=".ChunkChatActivity"
             android:label="@string/title_activity_chunk_chat_activity"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".ChunkPosition"
+            android:label="@string/title_activity_chunk_position"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

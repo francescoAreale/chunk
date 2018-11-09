@@ -87,45 +87,39 @@
             android:textSize="20dp"
             android:textStyle="bold" />
 
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/linearLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:orientation="horizontal">
-
-            <EditText
-                android:id="@+id/locationChunk"
-                android:layout_width="340dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:ellipsize="end"
-                android:ems="10"
-                android:hint="@string/chunk_place"
-                android:inputType="text"
-                android:paddingHorizontal="10dp"
-                android:singleLine="false"
-                android:text="" />
-
-            <ImageButton
-                android:id="@+id/myLocationButton"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_gravity="center"
-                android:layout_marginHorizontal="5dp"
-                android:background="@drawable/gps_location"
-                android:clickable="true"
-                android:focusable="true"
-                android:padding="20dp"
-                android:scaleType="fitCenter" />
-        </LinearLayout>
 
         <org.osmdroid.views.MapView
             android:id="@+id/map"
-            android:layout_width="397dp"
-            android:layout_height="250dp"
-            android:paddingTop="50dp" />
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:layout_gravity="center"
+            android:paddingTop="50dp"
+            android:visibility="gone" />
 
+        <TextView
+            android:id="@+id/positionsChunk"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:text="@string/Chunk_position"
+            android:textSize="20dp"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/positionChunk"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:background="@color/design_default_color_primary"
+            android:enabled="true"
+            android:padding="10dp"
+            android:text="Locate Chunk" />
 
         <Button
             android:id="@+id/sendChunk"
@@ -138,6 +132,7 @@
             android:background="@color/design_default_color_primary"
             android:enabled="true"
             android:padding="10dp"
+            android:visibility="gone"
             android:text="Start your chunk" />
 
     </LinearLayout>

@@ -7,10 +7,11 @@
     <string name="title_activity_new_chunk">New Chunk</string>
     <string name="title_activity_chunk_chat_activity">Chat Title</string>
     <string name="chunk_name">Hey! Make a title for the Chunk!  </string>
-    <string name="chunk_place">Tap an address for your chunk</string>
+    <string name="chunk_place">Tap an address or use current location</string>
     <string name="Chunk_position">Where is your chunk?</string>
     <string name="title_location_permission">Can Chunk access the location? </string>
 
     <string name="text_location_permission">Chunk needs to access to your gps location. </string>
     <string name="ok">OK </string>
+    <string name="title_activity_chunk_position">ChunkPosition</string>
 </resources>
