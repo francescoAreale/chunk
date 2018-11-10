@@ -39,7 +39,8 @@ public class ChunkPosition extends AppCompatActivity {
     LinearLayout sendLayoutButton = null;
     Double lastLatitude = null;
     Double lastLongitude = null;
-
+    public static final String LATITUDE_RESULT = "latitude";
+    public static final String LONGITUDE_RESULT = "longitude";
     // ARROTONDAMENTO PER DIFETTO
     public static double arrotondaPerDifetto(double value, int numCifreDecimali) {
         double temp = Math.pow(10, numCifreDecimali);
@@ -53,7 +54,6 @@ public class ChunkPosition extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         textPosition = (TextView) findViewById(R.id.positionLatLong);
         setSupportActionBar(toolbar);
-
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,8 +68,8 @@ public class ChunkPosition extends AppCompatActivity {
             public void onClick(View view) {
 
                 Intent data = new Intent();
-                data.putExtra("Latitude", lastLatitude);
-                data.putExtra("Longitude", lastLongitude);
+                data.putExtra(LATITUDE_RESULT, lastLatitude);
+                data.putExtra(LONGITUDE_RESULT, lastLongitude);
                 setResult(RESULT_OK, data);
                 finish();
             }

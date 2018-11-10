@@ -76,24 +76,41 @@
             android:layout_marginTop="10dp"
             android:text="" />
 
-        <TextView
-            android:id="@+id/whereIsChunk"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:layout_marginLeft="10dp"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
             android:layout_marginTop="10dp"
-            android:text="@string/Chunk_position"
-            android:textSize="20dp"
-            android:textStyle="bold" />
+            android:orientation="horizontal">
 
+            <TextView
+                android:id="@+id/whereIsChunk"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center"
+                android:layout_marginLeft="10dp"
+                android:layout_marginBottom="10dp"
+                android:text="@string/Chunk_position"
+                android:textSize="20dp"
+                android:textStyle="bold" />
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/positionChunk"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="5dp"
+                app:backgroundTint="@color/colorWhite"
+                app:srcCompat="@drawable/world_fab" />
+
+        </LinearLayout>
 
         <org.osmdroid.views.MapView
             android:id="@+id/map"
             android:layout_width="300dp"
             android:layout_height="300dp"
             android:layout_gravity="center"
-            android:paddingTop="50dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/my_message"
             android:visibility="gone" />
 
         <TextView
@@ -108,36 +125,19 @@
             android:textStyle="bold"
             android:visibility="gone" />
 
-        <Button
-            android:id="@+id/positionChunk"
-            style="@style/Widget.AppCompat.Button.Colored"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            android:background="@color/design_default_color_primary"
-            android:enabled="true"
-            android:padding="10dp"
-            android:text="Locate Chunk" />
-
-        <Button
-            android:id="@+id/sendChunk"
-            style="@style/Widget.AppCompat.Button.Colored"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            android:background="@color/design_default_color_primary"
-            android:enabled="true"
-            android:padding="10dp"
-            android:visibility="gone"
-            android:text="Start your chunk" />
-
     </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
 
+    <Button
+        android:id="@+id/sendChunk"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@color/design_default_color_primary"
+        android:enabled="true"
+        android:padding="10dp"
+        android:text="Start your chunk" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fabPhotoChunk"

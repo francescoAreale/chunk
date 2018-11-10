@@ -56,6 +56,7 @@ import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
@@ -69,12 +70,12 @@ public class NewChunk extends AppCompatActivity {
     private static String CHUNK_TITLE = "chunk";
     private static String CHAT_TITLE = "chat";
     private static String CHUNK_POSITION = "chunk_position";
+    private static final int REQUEST_POSITION = 100;
     IMapController mapController = null;
     MyLocationNewOverlay mLocationOverlay = null;
     LocationManager manager = null;
     FloatingActionButton fabPhotoChunk = null;
     EditText titleChunk = null;
-    EditText positionChunk = null;
     FirebaseAuth mFirebaseAuth;
     FirebaseUser mFirebaseUser = null;
     TextView positionsTextView = null;
@@ -82,7 +83,7 @@ public class NewChunk extends AppCompatActivity {
     ImageView imagePic;
     Button commitButton = null;
     Uri imagePicURI = null;
-    Button positionButton = null;
+    FloatingActionButton positionButton = null;
 
     public boolean checkLocationPermission() {
         if (ContextCompat.checkSelfPermission(this,
@@ -145,6 +146,10 @@ public class NewChunk extends AppCompatActivity {
         }
     }
 
+    public void enableSendButton() {
+
+
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -160,16 +165,14 @@ public class NewChunk extends AppCompatActivity {
         positionsTextView = (TextView) findViewById(R.id.positionsChunk);
         initializeOSM();
         initializeImageChunkAndButton();
-        userLocationFAB();
         checkLocationPermission();
         initializeCommitButton();
         titleChunk = (EditText) findViewById(R.id.editChunkTitle);
-        positionChunk = (EditText) findViewById(R.id.locationChunk);
-        positionButton = (Button) findViewById(R.id.positionChunk);
+        positionButton = (FloatingActionButton) findViewById(R.id.positionChunk);
         positionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(NewChunk.this, ChunkPosition.class));
+                startActivityForResult(new Intent(NewChunk.this, ChunkPosition.class), REQUEST_POSITION);
             }
         });
     }
@@ -193,26 +196,51 @@ public class NewChunk extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == REQUEST_IMAGE) {
-            if (resultCode == RESULT_OK) {
-                if (data != null) {
-                    // set the image selected from the user
-                    final Uri uri = data.getData();
-                    imagePicURI = uri;
-                    Log.d(TAG, "Uri: " + uri.toString());
-                    imagePic.setImageURI(imagePicURI);
+        switch (requestCode) {
+            case REQUEST_IMAGE:
+                if (resultCode == RESULT_OK) {
+                    if (data != null) {
+                        // set the image selected from the user
+                        final Uri uri = data.getData();
+                        imagePicURI = uri;
+                        Log.d(TAG, "Uri: " + uri.toString());
+                        imagePic.setImageURI(imagePicURI);
+                    }
                 }
-            }
+                break;
+            case REQUEST_POSITION:
+                if (resultCode == RESULT_OK) {
+                    if (data != null) {
+                        Double latitude = data.getExtras().getDouble(ChunkPosition.LATITUDE_RESULT);
+                        Double longitude = data.getExtras().getDouble(ChunkPosition.LONGITUDE_RESULT);
+                        GeoPoint locationOnMap = new GeoPoint(latitude, longitude);
+                        mapController.animateTo(locationOnMap);
+                        mapController.setCenter(locationOnMap);
+                        positionsTextView.setVisibility(View.VISIBLE);
+                        map.setVisibility(View.VISIBLE);
+                        positionsTextView.setText("Lat : " + latitude +
+                                " Long: " + longitude);
+                        Marker startMarker = new Marker(map);
+                        startMarker.setPosition(locationOnMap);
+                        startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+                        map.getOverlays().clear();
+                        map.getOverlays().add(startMarker);
+                    }
+                }
+            default:
+                break;
         }
+        ;
     }
 
     public void initializeOSM() {
 
         map = (MapView) findViewById(R.id.map);
         map.setTileSource(TileSourceFactory.MAPNIK);
-        map.setBuiltInZoomControls(true);
+        map.setBuiltInZoomControls(false);
         map.setMultiTouchControls(true);
-
+        mapController = map.getController();
+        mapController.setZoom(20);
     }
 
     private void checkGpsStatus() {
@@ -220,28 +248,24 @@ public class NewChunk extends AppCompatActivity {
         if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             buildAlertMessageNoGps();
         }
-        if (mLocationOverlay == null) {
-            mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(NewChunk.this), map);
-            map.getOverlays().add(mLocationOverlay);
-            mapController = map.getController();
-            mLocationOverlay.enableMyLocation();
-            mLocationOverlay.enableFollowLocation();
-            mapController.setZoom(20);
-        }
     }
 
-    private void commitOnFirebase() {
+    private boolean commitOnFirebase() {
 
-        if (titleChunk.getText().equals("")) {
+        if (titleChunk.getText().toString().equals("")) {
             Toast.makeText(this, "Insert a Title", Toast.LENGTH_SHORT).show();
-            return;
+            return false;
         }
 
         if (imagePicURI == null) {
             Toast.makeText(this, "Select an image for your chunk", Toast.LENGTH_SHORT).show();
-            return;
+            return false;
         }
 
+        if (map.getMapCenter().getLatitude() == 0.0 || map.getMapCenter().getLongitude() == 0.0) {
+            Toast.makeText(this, "Select a position for your chunk", Toast.LENGTH_SHORT).show();
+            return false;
+        }
 
         final Chunk newChunk = createNewChunk();
         mFirebaseDatabaseReference.child(CHUNK_TITLE).push()
@@ -266,6 +290,7 @@ public class NewChunk extends AppCompatActivity {
                         }
                     }
                 });
+        return true;
     }
 
     public void createChatOnFirebase(final String idChunk, final Chunk newChunk) {
@@ -331,36 +356,12 @@ public class NewChunk extends AppCompatActivity {
         commitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                commitOnFirebase();
-                finish();
+                if (commitOnFirebase())
+                    finish();
             }
         });
     }
 
-    private void userLocationFAB() {
-        ImageButton FAB = (ImageButton) findViewById(R.id.myLocationButton);
-        FAB.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                checkLocationPermission();
-
-                if (mLocationOverlay.getMyLocation() == null) {
-                    Toast.makeText(NewChunk.this, "GPS location not available ... ", Toast.LENGTH_SHORT).show();
-                    return;
-                } else {
-                    mapController.animateTo(mLocationOverlay.getMyLocation());
-                    mapController.setCenter(mLocationOverlay.getMyLocation());
-                    positionsTextView.setVisibility(View.VISIBLE);
-                    map.setVisibility(View.VISIBLE);
-                    positionChunk.setText("Lat : " + mLocationOverlay.getMyLocation().getLatitude() +
-                            " Long: " + mLocationOverlay.getMyLocation().getLongitude());
-                    positionsTextView.setText("Lat : " + mLocationOverlay.getMyLocation().getLatitude() +
-                            " Long: " + mLocationOverlay.getMyLocation().getLongitude());
-                }
-
-            }
-        });
-    }
 
     private void buildAlertMessageNoGps() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
