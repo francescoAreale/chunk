@@ -15,6 +15,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.chunk.ereafra.chunk.Utils.GPSutils;
+import com.chunk.ereafra.chunk.Utils.NetworkUtils;
+
 import org.osmdroid.api.IMapController;
 import org.osmdroid.events.MapEventsReceiver;
 import org.osmdroid.events.MapListener;
@@ -58,6 +61,9 @@ public class ChunkPosition extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (!GPSutils.checkLocationPermission(ChunkPosition.this))
+                    return;
+                GPSutils.checkGpsStatus(ChunkPosition.this);
                 mapController.animateTo(mLocationOverlay.getMyLocation());
                 mapController.setCenter(mLocationOverlay.getMyLocation());
             }
@@ -67,22 +73,24 @@ public class ChunkPosition extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
+                if (lastLatitude == 0.0 && lastLongitude == 0.0)
+                    return;
                 Intent data = new Intent();
-                data.putExtra(LATITUDE_RESULT, lastLatitude);
-                data.putExtra(LONGITUDE_RESULT, lastLongitude);
+                data.putExtra(LATITUDE_RESULT, arrotondaPerDifetto(lastLatitude, 8));
+                data.putExtra(LONGITUDE_RESULT, arrotondaPerDifetto(lastLongitude, 8));
                 setResult(RESULT_OK, data);
                 finish();
             }
         });
         initializeOSM();
-
     }
 
     public void initializeOSM() {
         map = (MapView) findViewById(R.id.map);
         map.setTileSource(TileSourceFactory.MAPNIK);
         map.setBuiltInZoomControls(true);
-
+        lastLatitude = 0.0;
+        lastLongitude = 0.0;
         map.setZoomRounding(false);
         if (mLocationOverlay == null) {
             mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(ChunkPosition.this), map);

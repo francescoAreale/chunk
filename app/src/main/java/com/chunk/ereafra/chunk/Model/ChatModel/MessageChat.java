@@ -1,4 +1,4 @@
-package com.chunk.ereafra.chunk;
+package com.chunk.ereafra.chunk.Model.ChatModel;
 
 public class MessageChat {
 
