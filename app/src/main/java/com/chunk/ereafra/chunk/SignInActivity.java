@@ -118,7 +118,7 @@ public class SignInActivity extends AppCompatActivity implements
                                     Toast.LENGTH_SHORT).show();
                         } else {
 
-                            startActivity(new Intent(SignInActivity.this, ChunkChatActivity.class));
+                            // startActivity(new Intent(SignInActivity.this, ChunkChatActivity.class));
                             finish();
                         }
                     }

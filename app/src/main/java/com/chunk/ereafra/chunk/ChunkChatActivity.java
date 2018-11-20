@@ -94,6 +94,7 @@ public class ChunkChatActivity extends AppCompatActivity implements GoogleApiCli
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
         // create a parser between the json model in the database and a class
 
+
         SnapshotParser<MessageChat> parser = new SnapshotParser<MessageChat>() {
             @Override
             public MessageChat parseSnapshot(DataSnapshot dataSnapshot) {

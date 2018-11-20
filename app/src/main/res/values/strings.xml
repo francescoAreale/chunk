@@ -14,4 +14,7 @@
     <string name="text_location_permission">Chunk needs to access to your gps location. </string>
     <string name="ok">OK </string>
     <string name="title_activity_chunk_position">ChunkPosition</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
