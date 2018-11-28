@@ -9,6 +9,9 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -50,6 +53,7 @@ public class ChunkPosition extends AppCompatActivity {
         return Math.floor(value * temp) / temp;
     }
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,11 +65,7 @@ public class ChunkPosition extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!GPSutils.checkLocationPermission(ChunkPosition.this))
-                    return;
-                GPSutils.checkGpsStatus(ChunkPosition.this);
-                mapController.animateTo(mLocationOverlay.getMyLocation());
-                mapController.setCenter(mLocationOverlay.getMyLocation());
+
             }
         });
         sendLayoutButton = (LinearLayout) findViewById(R.id.sendPosition);

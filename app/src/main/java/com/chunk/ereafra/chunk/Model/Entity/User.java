@@ -1,4 +1,4 @@
-package com.chunk.ereafra.chunk.Model;
+package com.chunk.ereafra.chunk.Model.Entity;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.auth.FirebaseUser;

@@ -1,6 +1,5 @@
 package com.chunk.ereafra.chunk;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -30,13 +29,11 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.chunk.ereafra.chunk.Model.ChatModel.MessageChat;
-import com.chunk.ereafra.chunk.Model.User;
 import com.chunk.ereafra.chunk.Utils.LoginUtils;
 import com.chunk.ereafra.chunk.Utils.NetworkUtils;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.firebase.ui.database.SnapshotParser;
-import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.Continuation;

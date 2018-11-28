@@ -1,16 +1,21 @@
 package com.chunk.ereafra.chunk;
 
+import android.Manifest;
 import android.content.Context;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.chunk.ereafra.chunk.Model.PlaceModel.MapChunk;
 import com.chunk.ereafra.chunk.Utils.FirebaseUtils;
 import com.chunk.ereafra.chunk.Utils.GPSutils;
 
@@ -35,13 +40,14 @@ public class MapSearchChunk extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 
-    MapView map = null;
     IMapController mapController = null;
     MyLocationNewOverlay mLocationOverlay = null;
     LocationManager manager = null;
     private OnFragmentInteractionListener mListener;
-
+    MapChunk mapChunk = null;
     public MapSearchChunk() {
+
+        //
         // Required empty public constructor
     }
 
@@ -55,46 +61,20 @@ public class MapSearchChunk extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }*/
-    public void initializeOSM() {
 
-        map = (MapView) (getView().findViewById(R.id.map));
-        map.setTileSource(TileSourceFactory.MAPNIK);
-        map.setBuiltInZoomControls(true);
-        //  lastLatitude = 0.0;
-        // lastLongitude = 0.0;
-        map.setZoomRounding(false);
-        if (mLocationOverlay == null) {
-            mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(getContext()), map);
-            map.getOverlays().add(mLocationOverlay);
-            mapController = map.getController();
-            mLocationOverlay.enableMyLocation();
-            mLocationOverlay.enableFollowLocation();
-            mapController.setZoom(20);
-            mapController.animateTo(mLocationOverlay.getMyLocation());
-            mapController.setCenter(mLocationOverlay.getMyLocation());
-            FirebaseUtils.getChunkAroundLocation(40.438293, -3.714093, 1.0, map);
-            map.addMapListener(new MapListener() {
-                @Override
-                public boolean onScroll(ScrollEvent event) {
-                   /* lastLatitude = map.getMapCenter().getLatitude();
-                    lastLongitude = map.getMapCenter().getLongitude();
-                    textPosition.setText("(" + arrotondaPerDifetto(map.getMapCenter().getLongitude(), 6) + ","
-                            + arrotondaPerDifetto(map.getMapCenter().getLatitude(), 6) + ")");*/
-                    Log.d("scroll", "lat: " + map.getMapCenter().getLatitude());
-                    return true;
-                }
 
-                @Override
-                public boolean onZoom(ZoomEvent event) {
-                    return false;
-                }
-            });
-        }
-    }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        initializeOSM();
+        mapChunk.initializeOSM(R.id.map, getView());
+        FloatingActionButton fab = (FloatingActionButton) getView().findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mapChunk.loadCurrentChunkOnActualPosition();
+            }
+        });
+        mapChunk.loadCurrentChunkOnActualPosition();
     }
 
     @Override
@@ -107,6 +87,7 @@ public class MapSearchChunk extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        mapChunk = new MapChunk(getContext());
         return inflater.inflate(R.layout.fragment_map_search_chunk, container, false);
     }
 

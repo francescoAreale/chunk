@@ -57,11 +57,47 @@ public class GPSutils {
         }
     }
 
+    public static void checkStoragePermission(final AppCompatActivity activity) {
+
+
+        if (ContextCompat.checkSelfPermission(activity.getBaseContext(),
+                Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(activity,
+                    Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+                new AlertDialog.Builder(activity.getBaseContext())
+                        .setTitle(R.string.title_location_permission)
+                        .setMessage(R.string.text_location_permission)
+                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                //Prompt the user once explanation has been shown
+                                ActivityCompat.requestPermissions(activity,
+                                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+                            }
+                        })
+                        .create()
+                        .show();
+            } else {
+                // No explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(activity,
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+            }
+
+        }
+    }
+
     public static void checkGpsStatus(AppCompatActivity activity) {
         LocationManager manager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
         if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             buildAlertMessageNoGps(activity);
         }
+
     }
 
     public static void buildAlertMessageNoGps(final AppCompatActivity activity) {

@@ -1,4 +1,4 @@
-package com.chunk.ereafra.chunk.Model;
+package com.chunk.ereafra.chunk.Model.Entity;
 
 import android.net.Uri;
 
