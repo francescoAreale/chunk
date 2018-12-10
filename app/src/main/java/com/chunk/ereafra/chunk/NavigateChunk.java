@@ -38,6 +38,7 @@ public class NavigateChunk extends AppCompatActivity implements GoogleApiClient.
         //
         GPSutils.checkLocationPermission(this);
         GPSutils.checkGpsStatus(this);
+        GPSutils.checkStoragePermission(this);
         // Check that the activity is using the layout version with
         // the fragment_container FrameLayout
         if (findViewById(R.id.fragment_container) != null) {
@@ -76,6 +77,8 @@ public class NavigateChunk extends AppCompatActivity implements GoogleApiClient.
             // do something here
             startActivity(new Intent(NavigateChunk.this, NewChunk.class));
         }
+        if (id == R.id.your_chunk)
+            startActivity(new Intent(NavigateChunk.this, PersonalChunks.class));
         return super.onOptionsItemSelected(item);
     }
     @Override

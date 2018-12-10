@@ -34,8 +34,8 @@ public class FirebaseUtils {
     public static String TAG = "Firebase Util Static CLASS";
     private static String CHUNK_POSITION = "chunk_position";
     private static String CHUNK_TITLE = "chunk";
-    private static String CHAT_TITLE = "chat";
-
+    public static final String CHAT_USERS = "users_chat";
+    public static String CHAT_TITLE = "chat";
     public static void insertFirebaseLocation(GeoLocation geo, String IDChunk) {
 
         GeoFire geoFire = new GeoFire(FirebaseDatabase.getInstance().getReference(CHUNK_POSITION));
@@ -51,6 +51,33 @@ public class FirebaseUtils {
         });
     }
 
+    public static void addChatToUser(final String idUser, final String idChunk) {
+        FirebaseDatabase.getInstance().getReference().child(CHAT_USERS).
+                child(idUser).
+                addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        boolean exists = false;
+                        for (DataSnapshot child : dataSnapshot.getChildren()) {
+                            if (((String) child.getValue()).equals(idChunk)) {
+                                exists = true;
+                                break;
+                            }
+                        }
+                        if (!exists)
+                            FirebaseDatabase.getInstance().getReference().child(CHAT_USERS).child(idUser)
+                                    .push().setValue(idChunk);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        // Getting Post failed, log a message
+                        Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+                        // ...
+                    }
+                });
+
+    }
 
     public static void getChunkFromID(String ID, final VisualizeChunkInterface<Chunk> objectVisualizer) {
 
@@ -136,8 +163,16 @@ public class FirebaseUtils {
                 });
     }
 
+    public static void updateChatOnFirebase(final Chunk chunk, String Message) {
+        Chat newChat = new Chat(null, Message, (System.currentTimeMillis() / 1000),
+                chunk.getChunkName(), chunk.getImage());
+        FirebaseDatabase.getInstance().getReference().child(CHAT_TITLE).child(chunk.getChatOfChunkID())
+                .setValue(newChat);
+    }
+
     public static void createChatOnFirebase(final String idChunk, final Chunk newChunk) {
-        Chat newChat = new Chat(null, "No Message Until Now", (System.currentTimeMillis() / 1000));
+        Chat newChat = new Chat(null, "No Message Until Now", (System.currentTimeMillis() / 1000),
+                newChunk.getChunkName(), newChunk.getImage());
         FirebaseDatabase.getInstance().getReference().child(CHAT_TITLE).push()
                 .setValue(newChat, new DatabaseReference.CompletionListener() {
                     @Override
@@ -148,6 +183,7 @@ public class FirebaseUtils {
                             newChunk.setChatOfChunkID(key);
                             FirebaseDatabase.getInstance().getReference().child(CHUNK_TITLE).child(idChunk)
                                     .setValue(newChunk);
+                            FirebaseUtils.addChatToUser(User.getInstance().getmFirebaseUser().getUid(), key);
                         } else {
                             Log.w(TAG, "Unable to write message to database.",
                                     databaseError.toException());

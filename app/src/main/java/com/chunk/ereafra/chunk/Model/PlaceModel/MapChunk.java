@@ -38,12 +38,14 @@ import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 
 import org.osmdroid.api.IMapController;
+import org.osmdroid.events.MapEventsReceiver;
 import org.osmdroid.events.MapListener;
 import org.osmdroid.events.ScrollEvent;
 import org.osmdroid.events.ZoomEvent;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.MapEventsOverlay;
 import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
@@ -98,6 +100,7 @@ public class MapChunk implements VisualizeChunkInterface<Chunk> {
         map.setTileSource(TileSourceFactory.MAPNIK);
         map.setBuiltInZoomControls(true);
         map.setZoomRounding(true);
+
         if (mLocationOverlay == null) {
             mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(context), map);
             map.getOverlays().add(mLocationOverlay);
@@ -107,6 +110,19 @@ public class MapChunk implements VisualizeChunkInterface<Chunk> {
             mapController.setZoom(20);
             mapController.animateTo(mLocationOverlay.getMyLocation());
             mapController.setCenter(mLocationOverlay.getMyLocation());
+            map.getOverlays().add(new MapEventsOverlay(new MapEventsReceiver() {
+
+                @Override
+                public boolean singleTapConfirmedHelper(GeoPoint p) {
+                    ChunkInfoWindow.closeAllInfoWindowsOn(map);
+                    return true;
+                }
+
+                @Override
+                public boolean longPressHelper(GeoPoint p) {
+                    return false;
+                }
+            }));
         }
     }
 
@@ -146,13 +162,13 @@ public class MapChunk implements VisualizeChunkInterface<Chunk> {
         GeoPoint locationOnMap = new GeoPoint(chunk.getLatitude(), chunk.getLongitude());
         final Marker startMarker = new Marker(map);
         startMarker.setPosition(locationOnMap);
-        final CircleImageView imageOfCHunk = new CircleImageView(context);
         Ion.with(context).load(chunk.getImage()).withBitmap().asBitmap()
                 .setCallback(new FutureCallback<Bitmap>() {
                     @Override
                     public void onCompleted(Exception e, Bitmap result) {
                         startMarker.setIcon(new BitmapDrawable(context.getResources(), createUserBitmap(chunk, result)));
-                        startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+                        startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_TOP);
+                        startMarker.setInfoWindow(new ChunkInfoWindow(map, result, chunk));
                         map.getOverlays().add(startMarker);
                     }
                 });

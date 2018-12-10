@@ -18,7 +18,7 @@ public class LoginUtils {
                                               GoogleApiClient.OnConnectionFailedListener onFailedListner,
                                               FragmentActivity fragmentActivity) {
         // Initialize FirebaseUtils Auth
-        GoogleApiClient mGoogleApiClient = new GoogleApiClient.Builder(fragmentActivity.getBaseContext())
+        GoogleApiClient mGoogleApiClient = new GoogleApiClient.Builder(fragmentActivity.getApplicationContext())
                 .enableAutoManage(fragmentActivity /* FragmentActivity */, onFailedListner /* OnConnectionFailedListener */)
                 .addApi(Auth.GOOGLE_SIGN_IN_API)
                 .build();
@@ -29,10 +29,10 @@ public class LoginUtils {
 
         if (mFirebaseUser == null) {
             // Not signed in, launch the Sign In activity
-            fragmentActivity.startActivity(new Intent(fragmentActivity.getBaseContext(), SignInActivity.class));
-            fragmentActivity.finish();
-
-        } else {
+            Intent ciao = new Intent(context, SignInActivity.class);
+            context.startActivity(ciao);
+            // fragmentActivity.finish();
+        }
             tmpUser = User.getInstance();
             tmpUser.setLogged(true);
             if (mFirebaseUser.getPhotoUrl() != null) {
@@ -41,7 +41,7 @@ public class LoginUtils {
             tmpUser.setUserName(mFirebaseUser.getDisplayName());
             tmpUser.setmGoogleApiClient(mGoogleApiClient);
             tmpUser.setmFirebaseUser(mFirebaseUser);
-        }
+
     }
 
 
