@@ -32,8 +32,6 @@ public class NavigateChunk extends AppCompatActivity implements GoogleApiClient.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigate_chunk);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        // setSupportActionBar(toolbar);
-        // LoginUtils.performSignOut(this);
         LoginUtils.performLoginWithGoogle(this, this, this);
         //
         GPSutils.checkLocationPermission(this);
@@ -79,6 +77,9 @@ public class NavigateChunk extends AppCompatActivity implements GoogleApiClient.
         }
         if (id == R.id.your_chunk)
             startActivity(new Intent(NavigateChunk.this, PersonalChunks.class));
+        if (id == R.id.sign_out_menu)
+            LoginUtils.performSignOut(this);
+
         return super.onOptionsItemSelected(item);
     }
     @Override

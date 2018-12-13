@@ -150,7 +150,7 @@ public class PersonalChunks extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_menu, menu);
+        inflater.inflate(R.menu.menu_personal_chunk, menu);
         return true;
     }
 

@@ -117,8 +117,7 @@ public class SignInActivity extends AppCompatActivity implements
                             Toast.makeText(SignInActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
                         } else {
-
-                            // startActivity(new Intent(SignInActivity.this, ChunkChatActivity.class));
+                            startActivity(new Intent(SignInActivity.this, NavigateChunk.class));
                             finish();
                         }
                     }

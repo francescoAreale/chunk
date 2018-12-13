@@ -3,6 +3,7 @@ package com.chunk.ereafra.chunk.Utils;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AppCompatActivity;
 
 import com.chunk.ereafra.chunk.Model.Entity.User;
 import com.chunk.ereafra.chunk.SignInActivity;
@@ -27,12 +28,13 @@ public class LoginUtils {
         FirebaseUser mFirebaseUser = mFirebaseAuth.getCurrentUser();
         User tmpUser = null;
 
+
         if (mFirebaseUser == null) {
             // Not signed in, launch the Sign In activity
             Intent ciao = new Intent(context, SignInActivity.class);
             context.startActivity(ciao);
-            // fragmentActivity.finish();
-        }
+            ((AppCompatActivity) context).finish();
+        } else {
             tmpUser = User.getInstance();
             tmpUser.setLogged(true);
             if (mFirebaseUser.getPhotoUrl() != null) {
@@ -41,7 +43,7 @@ public class LoginUtils {
             tmpUser.setUserName(mFirebaseUser.getDisplayName());
             tmpUser.setmGoogleApiClient(mGoogleApiClient);
             tmpUser.setmFirebaseUser(mFirebaseUser);
-
+        }
     }
 
 
@@ -51,5 +53,6 @@ public class LoginUtils {
         Auth.GoogleSignInApi.signOut(User.getInstance().getmGoogleApiClient());
         User.getInstance().setLogged(false);
         context.startActivity(new Intent(context, SignInActivity.class));
+        ((AppCompatActivity) context).finish();
     }
 }

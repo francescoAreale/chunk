@@ -37,6 +37,10 @@
         <activity
             android:name=".ChunkPosition"
             android:label="@string/title_activity_chunk_position"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".PersonalChunks"
+            android:label="@string/title_activity_personal_chunks"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
