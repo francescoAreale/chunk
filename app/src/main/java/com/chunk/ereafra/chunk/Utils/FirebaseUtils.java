@@ -154,7 +154,7 @@ public class FirebaseUtils {
                                             .child(imagePicURI.getLastPathSegment());
                             insertFirebaseLocation(new GeoLocation(newChunk.getLatitude(), newChunk.getLongitude()), key);
                             putImageInStorage(storageReference, imagePicURI, key, newChunk);
-                            createChatOnFirebase(key, newChunk);
+
                         } else {
                             Log.w(TAG, "Unable to write message to database.",
                                     databaseError.toException());
@@ -209,6 +209,7 @@ public class FirebaseUtils {
                     newChunk.setImage(downUri.toString());
                     FirebaseDatabase.getInstance().getReference().child(CHUNK_TITLE).child(key)
                             .setValue(newChunk);
+                    createChatOnFirebase(key, newChunk);
                     Log.d(TAG, "the image CHUNK has been loaded in the database");
                 }
             }

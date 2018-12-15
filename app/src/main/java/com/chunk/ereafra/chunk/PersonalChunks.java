@@ -32,6 +32,8 @@ import com.chunk.ereafra.chunk.Utils.LoginUtils;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.firebase.ui.database.SnapshotParser;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
@@ -44,7 +46,7 @@ import com.google.firebase.storage.StorageReference;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class PersonalChunks extends AppCompatActivity {
+public class PersonalChunks extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
 
     RecyclerView mMessageRecyclerView;
     private DatabaseReference mFirebaseDatabaseReference;
@@ -168,6 +170,18 @@ public class PersonalChunks extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        LoginUtils.performLoginWithGoogle(this, this, this);
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
 
     public static class ChunkViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 

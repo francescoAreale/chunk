@@ -1,5 +1,6 @@
 package com.chunk.ereafra.chunk.Model.Entity;
 
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -12,7 +13,7 @@ public class User {
     private String UserName;
     private String photoUser;
     private Boolean logged;
-    private GoogleApiClient mGoogleApiClient;
+    private GoogleSignInClient mGoogleApiClient;
     private FirebaseUser mFirebaseUser;
 
     // private constructor restricted to this class itself
@@ -36,11 +37,11 @@ public class User {
         this.mFirebaseUser = mFirebaseUser;
     }
 
-    public GoogleApiClient getmGoogleApiClient() {
+    public GoogleSignInClient getmGoogleApiClient() {
         return mGoogleApiClient;
     }
 
-    public void setmGoogleApiClient(GoogleApiClient mGoogleApiClient) {
+    public void setmGoogleApiClient(GoogleSignInClient mGoogleApiClient) {
         this.mGoogleApiClient = mGoogleApiClient;
     }
 

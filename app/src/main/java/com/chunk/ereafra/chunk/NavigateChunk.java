@@ -28,11 +28,17 @@ public class NavigateChunk extends AppCompatActivity implements GoogleApiClient.
     private static String TAG = "NavigateChunk";
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        LoginUtils.performLoginWithGoogle(this, this, this);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigate_chunk);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        LoginUtils.performLoginWithGoogle(this, this, this);
+
         //
         GPSutils.checkLocationPermission(this);
         GPSutils.checkGpsStatus(this);
@@ -77,7 +83,7 @@ public class NavigateChunk extends AppCompatActivity implements GoogleApiClient.
         }
         if (id == R.id.your_chunk)
             startActivity(new Intent(NavigateChunk.this, PersonalChunks.class));
-        if (id == R.id.sign_out_menu)
+        if(id == R.id.sign_out_menu)
             LoginUtils.performSignOut(this);
 
         return super.onOptionsItemSelected(item);

@@ -90,6 +90,12 @@ public class ChunkChatActivity extends AppCompatActivity implements GoogleApiCli
     // shared preference
     private SharedPreferences mSharedPreferences;
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        LoginUtils.performLoginWithGoogle(this, this, this);
+    }
+
     public void initializeFirebase() {
 
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
@@ -120,11 +126,7 @@ public class ChunkChatActivity extends AppCompatActivity implements GoogleApiCli
             @Override
             public int getItemViewType(int position) {
                 //Implement your logic here
-                MessageChat chat = this.getItem(position);
-                if (chat.getName().equals(User.getInstance().getUserName()))
-                    return 0;
-                else
-                    return 1;
+                return position;
             }
 
             @NonNull
@@ -132,7 +134,7 @@ public class ChunkChatActivity extends AppCompatActivity implements GoogleApiCli
             public MessageViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
                 LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
                 MessageChat chat = this.getItem(i);
-                if (i == 0)
+                if (chat.getName().equals(User.getInstance().getUserName()))
                     return new MessageViewHolder(inflater.inflate(R.layout.my_message, viewGroup, false), true);
                 else
                     return new MessageViewHolder(inflater.inflate(R.layout.message_item, viewGroup, false), false);
@@ -309,7 +311,7 @@ public class ChunkChatActivity extends AppCompatActivity implements GoogleApiCli
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        mUsername = ANONYMOUS;
+
 
         LoginUtils.performLoginWithGoogle(this, this, this);
 
@@ -332,7 +334,7 @@ public class ChunkChatActivity extends AppCompatActivity implements GoogleApiCli
                     final Uri uri = data.getData();
                     Log.d(TAG, "Uri: " + uri.toString());
 
-                    MessageChat tempMessage = new MessageChat(null, mUsername, mPhotoUrl,
+                    MessageChat tempMessage = new MessageChat(null, User.getInstance().getUserName(), User.getInstance().getPhotoUser(),
                             LOADING_IMAGE_URL);
                     mFirebaseDatabaseReference.child(MESSAGES_CHILD).child(chunk_release.getChatOfChunkID()).push()
                             .setValue(tempMessage, new DatabaseReference.CompletionListener() {
@@ -391,7 +393,7 @@ public class ChunkChatActivity extends AppCompatActivity implements GoogleApiCli
                 if (task.isSuccessful()) {
                     Uri downUri = task.getResult();
                     MessageChat friendlyMessage =
-                            new MessageChat(null, mUsername, mPhotoUrl,
+                            new MessageChat(null, User.getInstance().getUserName(), User.getInstance().getPhotoUser(),
                                     downUri.toString());
                     mFirebaseDatabaseReference.child(MESSAGES_CHILD).child(chunk_release.getChatOfChunkID()).child(key)
                             .setValue(friendlyMessage);
