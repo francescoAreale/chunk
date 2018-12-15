@@ -10,7 +10,6 @@
     <string name="chunk_place">Tap an address or use current location</string>
     <string name="Chunk_position">Where is your chunk?</string>
     <string name="title_location_permission">Can Chunk access the location? </string>
-    /string>
     <string name="text_location_permission">Chunk needs to access to your gps location. </string>
     <string name="ok">OK </string>
     <string name="title_activity_chunk_position">ChunkPosition</string>
