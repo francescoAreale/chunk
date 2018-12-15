@@ -7,7 +7,6 @@
         app:showAsAction="never" />
     <item
         android:id="@+id/addChunk"
-        android:icon="@android:drawable/ic_input_add"
-        android:title=""
-        app:showAsAction="always" />
+        android:title="add a chunk"
+        app:showAsAction="never" />
 </menu>

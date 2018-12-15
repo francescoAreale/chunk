@@ -4,24 +4,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
+    android:background="@color/colorPrimary"
     android:orientation="vertical">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <ImageView
+        android:id="@+id/welcome"
+        android:layout_width="190dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="40dp"
-        android:text="@string/sign_in"
-        android:textSize="30sp"
-        android:textStyle="bold" />
-
+        android:layout_gravity="center"
+        android:src="@drawable/welcom_to_chunk"
+        android:text="Toolbar Title" />
 
     <com.google.android.gms.common.SignInButton
         android:id="@+id/sign_in_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:layout_gravity="center"
+        android:layout_gravity="bottom|center"
+        android:layout_marginBottom="70dp"
         android:visibility="visible" />
 
     <ProgressBar
@@ -31,7 +31,8 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerInParent="true"
-        android:layout_gravity="center"
+        android:layout_gravity="bottom|center"
+        android:layout_marginBottom="70dp"
          />
 
 </FrameLayout>
