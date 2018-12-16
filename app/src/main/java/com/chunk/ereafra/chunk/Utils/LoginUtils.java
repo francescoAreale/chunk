@@ -19,6 +19,7 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class LoginUtils {
 
+
     // this object return a UserFirebase and Run the LoginActivity if the User is not logged
     public static void performLoginWithGoogle(Context context,
                                               GoogleApiClient.OnConnectionFailedListener onFailedListner,
@@ -32,6 +33,8 @@ public class LoginUtils {
 
 
         if (mFirebaseUser == null ) {
+            if(context instanceof SignInActivity)
+                return;
             // Not signed in, launch the Sign In activity
             Intent ciao = new Intent(context, SignInActivity.class);
             context.startActivity(ciao);

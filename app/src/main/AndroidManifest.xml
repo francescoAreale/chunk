@@ -16,32 +16,43 @@
         android:roundIcon="@drawable/chunk_logo"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".NavigateChunk">
+        <activity android:name=".SignInActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:name=".SignInActivity"
+            android:name=".NavigateChunk"
             android:label="@string/title_activity_sign_in"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".NewChunk"
-            android:label="@string/title_activity_new_chunk"
-            />
+            android:label="@string/title_activity_new_chunk" />
         <activity
             android:name=".ChunkChatActivity"
-            android:label="@string/title_activity_chunk_chat_activity"
-            />
+            android:label="@string/title_activity_chunk_chat_activity" />
         <activity
             android:name=".ChunkPosition"
-            android:label="@string/title_activity_chunk_position"
-             />
+            android:label="@string/title_activity_chunk_position" />
         <activity
             android:name=".PersonalChunks"
-            android:label="@string/title_activity_personal_chunks"
-           ></activity>
+            android:label="@string/title_activity_personal_chunks" >
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
+            </intent-filter>
+        </activity>
+
+        <receiver android:name=".Chunk_widget">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/chunk_widget_info" />
+        </receiver>
     </application>
 
 </manifest>

@@ -10,6 +10,7 @@
     <string name="chunk_place">Tap an address or use current location</string>
     <string name="Chunk_position">Where is your chunk?</string>
     <string name="title_location_permission">Can Chunk access the location? </string>
+    <string name="title_storage_permission">Can Chunk access your storage?</string>
     <string name="text_location_permission">Chunk needs to access to your gps location. </string>
     <string name="ok">OK </string>
     <string name="title_activity_chunk_position">ChunkPosition</string>
@@ -17,4 +18,6 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_personal_chunks">PersonalChunks</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
 </resources>

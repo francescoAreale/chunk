@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:initialKeyguardLayout="@layout/chunk_widget"
+    android:initialLayout="@layout/chunk_widget"
+    android:minWidth="40dp"
+    android:minHeight="40dp"
+    android:previewImage="@drawable/chunk_logo"
+    android:resizeMode="horizontal|vertical"
+    android:updatePeriodMillis="86400000"
+    android:configure="com.chunk.ereafra.chunk.PersonalChunks"
+    android:widgetCategory="home_screen"></appwidget-provider>

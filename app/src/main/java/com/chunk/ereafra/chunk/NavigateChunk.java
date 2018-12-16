@@ -2,6 +2,7 @@ package com.chunk.ereafra.chunk;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -32,6 +33,8 @@ import com.chunk.ereafra.chunk.Utils.NetworkUtils;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 
+import org.osmdroid.config.Configuration;
+import org.osmdroid.tileprovider.constants.OpenStreetMapTileProviderConstants;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
@@ -47,13 +50,37 @@ public class NavigateChunk extends AppCompatActivity implements GoogleApiClient.
     @Override
     protected void onStart() {
         super.onStart();
-        LoginUtils.performLoginWithGoogle(this, this, this);
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case GPSutils.ALL_PERMISSIONS: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                } else {
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request.
+        }
+
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        LoginUtils.performLoginWithGoogle(this, this, this);
         setContentView(R.layout.activity_navigate_chunk);
+        mapChunk = new MapChunk(this,null);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -64,27 +91,6 @@ public class NavigateChunk extends AppCompatActivity implements GoogleApiClient.
         //GPSutils.checkGpsStatus(this);
         // Check that the activity is using the layout version with
         // the fragment_container FrameLayout
-        MapView myOpenMapView = (MapView)findViewById(R.id.map);
-        mapChunk = new MapChunk(this,myOpenMapView);
-        mapChunk.initializeOSM();
-        GpsMyLocationProvider provider = new GpsMyLocationProvider(this);
-        provider.addLocationSource(LocationManager.NETWORK_PROVIDER);
-        MyLocationNewOverlay locationOverlay = new MyLocationNewOverlay( provider, mapChunk.getMap());
-        locationOverlay.enableFollowLocation();
-        locationOverlay.runOnFirstFix(new Runnable() {
-            public void run() {
-                mapChunk.loadCurrentChunkOnActualPosition();
-            }
-        });
-        mapChunk.getMap().getOverlayManager().add(locationOverlay);
-        mapChunk.getMap().addOnFirstLayoutListener(new MapView.OnFirstLayoutListener() {
-
-            @Override
-            public void onFirstLayout(View v, int left, int top, int right, int bottom) {
-                pbar.setVisibility(View.INVISIBLE);
-                mapChunk.loadCurrentChunkOnActualPosition();
-            }
-        });
         Drawable myFabSrc = getDrawable(android.R.drawable.ic_menu_compass);
 //copy it in a new one
         Drawable willBeWhite = myFabSrc.getConstantState().newDrawable();
@@ -100,6 +106,27 @@ public class NavigateChunk extends AppCompatActivity implements GoogleApiClient.
                 {
                     Toast.makeText(NavigateChunk.this, "Please connect to the internet", Toast.LENGTH_SHORT).show();
                 }
+                mapChunk.setMapToCenter();
+                mapChunk.loadCurrentChunkOnActualPosition();
+            }
+        });
+
+        //mapChunk.initializeOSM();
+        GpsMyLocationProvider provider = new GpsMyLocationProvider(this);
+        provider.addLocationSource(LocationManager.NETWORK_PROVIDER);
+        MyLocationNewOverlay locationOverlay = new MyLocationNewOverlay( provider, mapChunk.getMap());
+        locationOverlay.enableFollowLocation();
+        locationOverlay.runOnFirstFix(new Runnable() {
+            public void run() {
+                mapChunk.loadCurrentChunkOnActualPosition();
+            }
+        });
+        mapChunk.getMap().getOverlayManager().add(locationOverlay);
+        mapChunk.getMap().addOnFirstLayoutListener(new MapView.OnFirstLayoutListener() {
+
+            @Override
+            public void onFirstLayout(View v, int left, int top, int right, int bottom) {
+                pbar.setVisibility(View.INVISIBLE);
                 mapChunk.loadCurrentChunkOnActualPosition();
             }
         });
@@ -144,7 +171,8 @@ public class NavigateChunk extends AppCompatActivity implements GoogleApiClient.
         //if you make changes to the configuration, use
         //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         //Configuration.getInstance().load(this, PreferenceManager.getDefaultSharedPreferences(this));
-        mapChunk.getMap().onResume(); //needed for compass, my location overlays, v6.0.0 and up
+        if(mapChunk!=null)
+            mapChunk.getMap().onResume(); //needed for compass, my location overlays, v6.0.0 and up
     }
 
     public void onPause(){
@@ -153,6 +181,7 @@ public class NavigateChunk extends AppCompatActivity implements GoogleApiClient.
         //if you make changes to the configuration, use
         //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         //Configuration.getInstance().save(this, prefs);
-        mapChunk.getMap().onPause();  //needed for compass, my location overlays, v6.0.0 and up
+        if(mapChunk!=null)
+            mapChunk.getMap().onPause();  //needed for compass, my location overlays, v6.0.0 and up
     }
 }

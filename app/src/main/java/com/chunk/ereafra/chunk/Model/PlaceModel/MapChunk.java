@@ -1,5 +1,6 @@
 package com.chunk.ereafra.chunk.Model.PlaceModel;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -15,12 +16,14 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.location.LocationManager;
 import android.media.ThumbnailUtils;
+import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
@@ -51,6 +54,7 @@ import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -67,10 +71,52 @@ public class MapChunk implements VisualizeChunkInterface<Chunk> {
     MyLocationNewOverlay mLocationOverlay = null;
     LocationManager manager = null;
     Context context;
+    /** Base path for osmdroid files. Zip files are in this folder. */
+    public static File OSMDROID_PATH = new File(Environment.getExternalStorageDirectory(),
+            "osmdroid");
+
+    /** Base path for tiles. */
+    public static File TILE_PATH_BASE = new File(OSMDROID_PATH, "tiles");
+
+    /** 600 Mb */
+    public static long TILE_MAX_CACHE_SIZE_BYTES = 600L * 1024 * 1024;
+
+    /** 500 Mb */
+    public static long TILE_TRIM_CACHE_SIZE_BYTES = 500L * 1024 * 1024;
+
+    public static void setCachePath(String newFullPath){
+        OSMDROID_PATH = new File(newFullPath);
+        TILE_PATH_BASE = new File(OSMDROID_PATH, "tiles");
+    }
+
+    /** Change the osmdroid tiles cache sizes
+     * @param maxCacheSize in Mb. Default is 600 Mb.
+     * @param trimCacheSize When the cache size exceeds maxCacheSize, tiles will be automatically removed to reach this target. In Mb. Default is 500 Mb.
+     */
+    public static void setCacheSizes(long maxCacheSize, long trimCacheSize){
+        TILE_MAX_CACHE_SIZE_BYTES = maxCacheSize * 1024 * 1024;
+        TILE_TRIM_CACHE_SIZE_BYTES = trimCacheSize * 1024 * 1024;
+    }
+
 
     public MapChunk(Context context, MapView map) {
         this.context = context;
-        this.map = map;
+        Configuration.getInstance().setExpirationOverrideDuration(365L * 24L * 3600L * 1000L);
+        Configuration.getInstance().setTileFileSystemCacheMaxBytes(1024L * 1024L * 1024L * 10L);
+        Configuration.getInstance().setTileFileSystemCacheTrimBytes(1024L * 1024L * 1024L * 9L);
+        setCachePath("chunk/data/com.chunk.ereafra.chunk");
+        Configuration.getInstance().setOsmdroidBasePath(OSMDROID_PATH);
+        Configuration.getInstance().setOsmdroidTileCache(OSMDROID_PATH);
+        //LinearLayout contentLayout = (LinearLayout)((Activity)contfiext).findViewById(R.id.layout_map);
+        //this.map  = new MapView(context);
+        this.map = ((Activity)context).findViewById(R.id.map_explore_chunk);
+       /* this.map.setTileSource(TileSourceFactory.MAPNIK);
+        org.osmdroid.views.MapView.LayoutParams mapParams = new org.osmdroid.views.MapView.LayoutParams(
+                org.osmdroid.views.MapView.LayoutParams.MATCH_PARENT,
+                org.osmdroid.views.MapView.LayoutParams.MATCH_PARENT,
+                null, 0, 0, 0);*/
+        initializeOSM();
+       // contentLayout.addView( this.map, mapParams);
     }
 
     public static Bitmap getBitmapFromURL(String src) {
@@ -97,7 +143,6 @@ public class MapChunk implements VisualizeChunkInterface<Chunk> {
     }
 
     public void initializeOSM() {
-
 
         map.setTileSource(TileSourceFactory.MAPNIK);
         map.setBuiltInZoomControls(true);
@@ -224,9 +269,14 @@ public class MapChunk implements VisualizeChunkInterface<Chunk> {
         return result;
     }
 
+    public void setMapToCenter(){
+        mapController.animateTo(mLocationOverlay.getMyLocation());
+        mapController.setCenter(mLocationOverlay.getMyLocation());
+        mapController.setZoom(20);
+    }
+
     public void loadCurrentChunkOnActualPosition() {
-        if (!GPSutils.checkLocationPermission((AppCompatActivity) context))
-            return;
+        GPSutils.asksForAllPermission((AppCompatActivity) context);
         GPSutils.checkGpsStatus((AppCompatActivity) context);
         //mapController.animateTo(mLocationOverlay.getMyLocation());
         //mapController.setCenter(mLocationOverlay.getMyLocation());
