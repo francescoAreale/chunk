@@ -2,16 +2,15 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/sign_out_menu"
-        android:title="@string/sign_out"
-        app:showAsAction="never" />
-    <item
         android:id="@+id/your_chunk"
         android:title="your chunks"
         app:showAsAction="never" />
     <item
         android:id="@+id/addChunk"
-        android:icon="@android:drawable/ic_input_add"
-        android:title=""
-        app:showAsAction="always" />
+        android:title="add a chunk"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/sign_out_menu"
+        android:title="@string/sign_out"
+        app:showAsAction="never" />
 </menu>

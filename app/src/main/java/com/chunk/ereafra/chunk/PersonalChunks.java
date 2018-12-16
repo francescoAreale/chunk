@@ -59,6 +59,8 @@ public class PersonalChunks extends AppCompatActivity implements GoogleApiClient
         setContentView(R.layout.activity_personal_chunks);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setDisplayShowCustomEnabled(true);
         mMessageRecyclerView = (RecyclerView) findViewById(R.id.personaChunks);
         mLinearLayoutManager = new LinearLayoutManager(getApplicationContext());
         //mLinearLayoutManager.setStackFromEnd(true);

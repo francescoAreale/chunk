@@ -128,23 +128,24 @@
     </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
 
-    <Button
+    <ImageButton
         android:id="@+id/sendChunk"
         style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="65dp"
         android:layout_gravity="bottom"
         android:background="@color/design_default_color_primary"
+        android:src="@drawable/start_new_chunk_little"
+        android:scaleType="fitCenter"
         android:enabled="true"
         android:padding="20dp"
-        android:text="Start your chunk" />
+      />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fabPhotoChunk"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/fab_margin"
-        app:backgroundTint="@color/design_default_color_primary"
         app:layout_anchor="@id/app_bar"
         app:layout_anchorGravity="bottom|end"
         app:srcCompat="@android:drawable/ic_menu_camera" />

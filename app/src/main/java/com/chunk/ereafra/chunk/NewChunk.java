@@ -4,6 +4,11 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.ScaleDrawable;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -15,6 +20,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -63,7 +69,7 @@ public class NewChunk extends AppCompatActivity {
     EditText titleChunk = null;
     TextView positionsTextView = null;
     ImageView imagePic;
-    Button commitButton = null;
+    ImageButton commitButton = null;
     FloatingActionButton positionButton = null;
 
     @Override
@@ -116,6 +122,12 @@ public class NewChunk extends AppCompatActivity {
     public void initializeImageChunkAndButton() {
 
         fabPhotoChunk = (FloatingActionButton) findViewById(R.id.fabPhotoChunk);
+        Drawable myFabSrc = getDrawable(android.R.drawable.ic_menu_camera);
+//copy it in a new one
+        Drawable willBeWhite = myFabSrc.getConstantState().newDrawable();
+//set the color filter, you can use also Mode.SRC_ATOP
+        willBeWhite.mutate().setColorFilter(Color.WHITE, PorterDuff.Mode.MULTIPLY);
+        fabPhotoChunk.setImageDrawable(willBeWhite);
         imagePic = (ImageView) findViewById(R.id.imageChunk);
         fabPhotoChunk.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -207,7 +219,11 @@ public class NewChunk extends AppCompatActivity {
     }
 
     private void initializeCommitButton() {
-        commitButton = (Button) findViewById(R.id.sendChunk);
+        commitButton = (ImageButton) findViewById(R.id.sendChunk);
+        Drawable myIcon = getDrawable(R.drawable.start_new_chunk_little);
+        /*myIcon.setBounds(0, 0, (int)(myIcon.getIntrinsicWidth()*0.5),
+                (int)(myIcon.getIntrinsicHeight()*0.5));
+        ScaleDrawable sd = new ScaleDrawable(myIcon, 0, 10F, 10F);*/
         commitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

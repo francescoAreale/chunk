@@ -32,7 +32,7 @@
                 android:layout_marginBottom="15dp"
                 android:layout_marginLeft="42dp"
                 android:gravity="center"
-                android:text="Join Now"
+                android:text="ENTER NOW"
                 android:layout_gravity="left"
                 android:layout_weight="1" />
 

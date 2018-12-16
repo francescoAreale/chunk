@@ -2,6 +2,9 @@ package com.chunk.ereafra.chunk;
 
 import android.Manifest;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -45,8 +48,8 @@ public class MapSearchChunk extends Fragment {
     LocationManager manager = null;
     private OnFragmentInteractionListener mListener;
     MapChunk mapChunk = null;
+    FloatingActionButton fab ;
     public MapSearchChunk() {
-
         //
         // Required empty public constructor
     }
@@ -66,8 +69,15 @@ public class MapSearchChunk extends Fragment {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        mapChunk.initializeOSM(R.id.map, getView());
-        FloatingActionButton fab = (FloatingActionButton) getView().findViewById(R.id.fab);
+        mapChunk.initializeOSM();
+        Drawable myFabSrc = view.getContext().getDrawable(android.R.drawable.ic_menu_compass);
+//copy it in a new one
+        Drawable willBeWhite = myFabSrc.getConstantState().newDrawable();
+//set the color filter, you can use also Mode.SRC_ATOP
+        willBeWhite.mutate().setColorFilter(Color.WHITE, PorterDuff.Mode.MULTIPLY);
+//set it to your fab button initialized before
+        fab = (FloatingActionButton) getView().findViewById(R.id.fab);
+        fab.setImageDrawable(willBeWhite);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -87,8 +97,9 @@ public class MapSearchChunk extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        mapChunk = new MapChunk(getContext());
-        return inflater.inflate(R.layout.fragment_map_search_chunk, container, false);
+        View v = inflater.inflate(R.layout.fragment_map_search_chunk, container, false);
+
+        return v;
     }
 
 

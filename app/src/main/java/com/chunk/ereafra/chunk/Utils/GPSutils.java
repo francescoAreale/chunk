@@ -18,6 +18,8 @@ import com.chunk.ereafra.chunk.R;
 public class GPSutils {
 
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
+    public static final int MY_PERMISSIONS_REQUEST_WRITE_STORAGE= 100;
+    public static final int MY_PERMISSIONS_REQUEST_READ_STORAGE = 101;
     public static final String MESSAGE_GPS_ERROR = "Your GPS seems to be disabled, do you want to enable it?";
 
     public static boolean checkLocationPermission(final AppCompatActivity activity) {
@@ -71,14 +73,14 @@ public class GPSutils {
                 // this thread waiting for the user's response! After the user
                 // sees the explanation, try again to request the permission.
                 new AlertDialog.Builder(activity.getBaseContext())
-                        .setTitle(R.string.title_location_permission)
-                        .setMessage(R.string.text_location_permission)
+                        .setTitle(R.string.title_storage_permission)
+                        .setMessage(R.string.title_storage_permission)
                         .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 //Prompt the user once explanation has been shown
                                 ActivityCompat.requestPermissions(activity,
-                                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+                                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_READ_STORAGE);
                             }
                         })
                         .create()
@@ -86,9 +88,40 @@ public class GPSutils {
             } else {
                 // No explanation needed, we can request the permission.
                 ActivityCompat.requestPermissions(activity,
-                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_READ_STORAGE);
+
             }
 
+        }
+        if (ContextCompat.checkSelfPermission(activity.getBaseContext(),
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(activity,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+                new AlertDialog.Builder(activity.getBaseContext())
+                        .setTitle(R.string.title_storage_permission)
+                        .setMessage(R.string.title_storage_permission)
+                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                //Prompt the user once explanation has been shown
+                                ActivityCompat.requestPermissions(activity,
+                                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_WRITE_STORAGE);
+                            }
+                        })
+                        .create()
+                        .show();
+            } else {
+                // No explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(activity,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_WRITE_STORAGE);
+
+            }
         }
     }
 

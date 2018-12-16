@@ -38,6 +38,7 @@ import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 
 import org.osmdroid.api.IMapController;
+import org.osmdroid.config.Configuration;
 import org.osmdroid.events.MapEventsReceiver;
 import org.osmdroid.events.MapListener;
 import org.osmdroid.events.ScrollEvent;
@@ -67,8 +68,9 @@ public class MapChunk implements VisualizeChunkInterface<Chunk> {
     LocationManager manager = null;
     Context context;
 
-    public MapChunk(Context context) {
+    public MapChunk(Context context, MapView map) {
         this.context = context;
+        this.map = map;
     }
 
     public static Bitmap getBitmapFromURL(String src) {
@@ -94,11 +96,12 @@ public class MapChunk implements VisualizeChunkInterface<Chunk> {
         this.map = map;
     }
 
-    public void initializeOSM(int Idmap, View view) {
+    public void initializeOSM() {
 
-        map = (MapView) (view.findViewById(Idmap));
+
         map.setTileSource(TileSourceFactory.MAPNIK);
         map.setBuiltInZoomControls(true);
+        map.setMultiTouchControls(true);
         map.setZoomRounding(true);
 
         if (mLocationOverlay == null) {
@@ -225,9 +228,9 @@ public class MapChunk implements VisualizeChunkInterface<Chunk> {
         if (!GPSutils.checkLocationPermission((AppCompatActivity) context))
             return;
         GPSutils.checkGpsStatus((AppCompatActivity) context);
-        mapController.animateTo(mLocationOverlay.getMyLocation());
-        mapController.setCenter(mLocationOverlay.getMyLocation());
-        mapController.setZoom(20);
+        //mapController.animateTo(mLocationOverlay.getMyLocation());
+        //mapController.setCenter(mLocationOverlay.getMyLocation());
+        //mapController.setZoom(20);
         if (mLocationOverlay.getMyLocation() != null)
             FirebaseUtils.getChunkAroundLocation(mLocationOverlay.getMyLocation().getLatitude(),
                     mLocationOverlay.getMyLocation().getLongitude(), 1.0, this);
