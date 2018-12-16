@@ -1,8 +1,14 @@
 package com.chunk.ereafra.chunk;
 
+import android.app.Activity;
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -20,6 +26,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RemoteViews;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -43,6 +50,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.gson.Gson;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -52,7 +60,7 @@ public class PersonalChunks extends AppCompatActivity implements GoogleApiClient
     private DatabaseReference mFirebaseDatabaseReference;
     private FirebaseRecyclerAdapter<String, PersonalChunks.ChunkViewHolder> mFirebaseAdapter;
     private LinearLayoutManager mLinearLayoutManager;
-
+    private int mAppWidgetId ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,6 +73,17 @@ public class PersonalChunks extends AppCompatActivity implements GoogleApiClient
         mLinearLayoutManager = new LinearLayoutManager(getApplicationContext());
         //mLinearLayoutManager.setStackFromEnd(true);
         mMessageRecyclerView.setLayoutManager(mLinearLayoutManager);
+        Intent intent = getIntent();
+        Bundle extras = intent.getExtras();
+        if (extras != null) {
+            mAppWidgetId = extras.getInt(
+                    AppWidgetManager.EXTRA_APPWIDGET_ID,
+                    AppWidgetManager.INVALID_APPWIDGET_ID);
+            ImageView imageTitle = findViewById(R.id.toolbar_title);
+            imageTitle.setImageDrawable(getDrawable(R.drawable.select_a_chunk));
+        }else{
+            mAppWidgetId = 0;
+        }
         startFirebase();
     }
 
@@ -112,7 +131,7 @@ public class PersonalChunks extends AppCompatActivity implements GoogleApiClient
             public PersonalChunks.ChunkViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
                 LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
                 return new PersonalChunks.ChunkViewHolder(inflater.inflate(R.layout.item_personal_chat, viewGroup,
-                        false));
+                        false),PersonalChunks.this);
             }
 
             @Override
@@ -131,6 +150,8 @@ public class PersonalChunks extends AppCompatActivity implements GoogleApiClient
                                 holder.lastMessage.setText(chat.getLastMessage());
                                 holder.setChunk(new Chunk(null, chat.getTitleChat(),
                                         0, 0.0, 0.0, idChat, chat.getUrlImage()));
+                                if(mAppWidgetId!=0)
+                                    holder.setIsForWidget(mAppWidgetId);
                             }
 
                             @Override
@@ -191,9 +212,21 @@ public class PersonalChunks extends AppCompatActivity implements GoogleApiClient
         TextView TitleChunk;
         CircleImageView chunkImgView;
         Chunk chunk;
+        int mAppWidgetId = 0;
+        Context contex;
 
-        public ChunkViewHolder(View v) {
+        public void saveHashMap(String key , Object obj) {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(contex);
+            SharedPreferences.Editor editor = prefs.edit();
+            Gson gson = new Gson();
+            String json = gson.toJson(obj);
+            editor.putString(key,json);
+            editor.apply();     // This line is IMPORTANT !!!
+        }
+
+        public ChunkViewHolder(View v, Context contex) {
             super(v);
+            this.contex = contex;
             TitleChunk = (TextView) itemView.findViewById(R.id.TitleChat);
             lastMessage = (TextView) itemView.findViewById(R.id.messageTextView);
             chunkImgView = (CircleImageView) itemView.findViewById(R.id.imageSingleChunk);
@@ -204,10 +237,31 @@ public class PersonalChunks extends AppCompatActivity implements GoogleApiClient
             this.chunk = chunk;
         }
 
+        public void setIsForWidget(int isForWidget){
+            this.mAppWidgetId = isForWidget;
+        }
 
         @Override
         public void onClick(View v) {
-            if (this.chunk != null) {
+            if(mAppWidgetId != 0)
+            {
+                saveHashMap(String.valueOf(mAppWidgetId),chunk);
+                Intent intent = new Intent();
+                intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+// Use an array and EXTRA_APPWIDGET_IDS instead of AppWidgetManager.EXTRA_APPWIDGET_ID,
+// since it seems the onUpdate() is only fired on that:
+                int[] ids = AppWidgetManager.
+                        getInstance(contex.getApplicationContext()).
+                        getAppWidgetIds(new ComponentName(contex.getApplicationContext(), Chunk_widget.class));
+
+                intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
+                contex.sendBroadcast(intent);
+                Intent resultValue = new Intent();
+                resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
+                ((Activity)contex).setResult(RESULT_OK, resultValue);
+                ((Activity)contex).finish();
+            }
+             else if (this.chunk != null) {
                 Intent intent = new Intent(v.getContext(), ChunkChatActivity.class);
                 Bundle b = new Bundle();
                 b.putParcelable(ChunkChatActivity.ID_OF_CHAT, this.chunk); //Your id

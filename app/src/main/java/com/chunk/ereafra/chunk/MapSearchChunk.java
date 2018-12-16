@@ -50,7 +50,6 @@ public class MapSearchChunk extends Fragment {
     MapChunk mapChunk = null;
     FloatingActionButton fab ;
     public MapSearchChunk() {
-
         //
         // Required empty public constructor
     }
@@ -70,7 +69,7 @@ public class MapSearchChunk extends Fragment {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        mapChunk.initializeOSM(R.id.map, getView());
+        mapChunk.initializeOSM();
         Drawable myFabSrc = view.getContext().getDrawable(android.R.drawable.ic_menu_compass);
 //copy it in a new one
         Drawable willBeWhite = myFabSrc.getConstantState().newDrawable();
@@ -98,8 +97,9 @@ public class MapSearchChunk extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        mapChunk = new MapChunk(getContext());
-        return inflater.inflate(R.layout.fragment_map_search_chunk, container, false);
+        View v = inflater.inflate(R.layout.fragment_map_search_chunk, container, false);
+
+        return v;
     }
 
 

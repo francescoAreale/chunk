@@ -11,6 +11,8 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.chunk.ereafra.chunk.Model.Entity.User;
+import com.chunk.ereafra.chunk.Utils.GPSutils;
+import com.chunk.ereafra.chunk.Utils.LoginUtils;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -49,8 +51,16 @@ public class SignInActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
+        LoginUtils.performLoginWithGoogle(this,this,this);
+        if(User.getInstance().isLogged()){
+            startActivity(new Intent(SignInActivity.this, NavigateChunk.class));
+            finish();
+        }
+        GPSutils.asksForAllPermission(this);
+
         progress = (ProgressBar)findViewById(R.id.progressBar) ;
         progress.setVisibility(View.GONE);
+       // GPSutils.asksForAllPermission(this);
         // Assign fields
         mSignInButton = (SignInButton) findViewById(R.id.sign_in_button);
 
@@ -142,6 +152,8 @@ public class SignInActivity extends AppCompatActivity implements
                             finish();
                         } else {
                             // If sign in fails, display a message to the user.
+                            progress.setVisibility(View.GONE);
+                            mSignInButton.setVisibility(View.VISIBLE);
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
                             Snackbar.make(findViewById(R.id.sign_in_layout), "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
                         }

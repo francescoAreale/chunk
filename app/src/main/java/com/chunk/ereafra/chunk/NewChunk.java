@@ -106,7 +106,7 @@ public class NewChunk extends AppCompatActivity {
         getSupportActionBar().hide();
         initializeOSM();
         initializeImageChunkAndButton();
-        GPSutils.checkLocationPermission(this);
+        GPSutils.asksForAllPermission(this);
         GPSutils.checkGpsStatus(this);
         initializeCommitButton();
 
