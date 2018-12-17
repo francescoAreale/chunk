@@ -17,9 +17,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/messengerImageView"
-        android:layout_marginLeft="15dp"
+        android:layout_marginStart="15dp"
         android:layout_marginBottom="2dp"
-        android:layout_toRightOf="@+id/messengerImageView"
+        android:layout_toEndOf="@+id/messengerImageView"
         android:background="@drawable/their_message"
         android:orientation="vertical">
 
@@ -28,10 +28,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingHorizontal="10dp"
-            android:paddingLeft="5dp"
+            android:paddingStart="5dp"
             android:paddingTop="5dp"
             android:paddingBottom="2dp"
-            android:text="Rose"
+            android:text="@string/name_contact"
             android:textColor="@color/colorName" />
 
         <TextView
@@ -42,7 +42,7 @@
             android:paddingHorizontal="10dp"
             android:paddingVertical="2dp"
             android:paddingBottom="2dp"
-            android:text="How are you doing? This is a long message that should probably wrap."
+            android:text="@string/long_text"
             android:textSize="15dp" />
 
         <ImageView

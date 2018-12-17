@@ -42,8 +42,8 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="left"
-                    android:text="Create New Chunk"
+                    android:layout_gravity="start"
+                    android:text="@string/create_a_new_chunk_title_activity"
                     android:textSize="20dp"
                     android:textStyle="bold" />
             </android.support.v7.widget.Toolbar>
@@ -87,7 +87,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|center"
-                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
                 android:layout_marginBottom="10dp"
                 android:text="@string/Chunk_position"
                 android:textSize="20dp"
@@ -97,7 +97,7 @@
                 android:id="@+id/positionChunk"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="15dp"
+                android:layout_marginStart="15dp"
                 android:layout_marginTop="5dp"
                 app:backgroundTint="@color/colorWhite"
                 app:srcCompat="@drawable/world_fab" />
@@ -118,7 +118,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
             android:text="@string/Chunk_position"
             android:textSize="10dp"

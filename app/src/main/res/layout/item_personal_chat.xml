@@ -23,7 +23,7 @@
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:src="@drawable/ic_account_circle_black_36dp"
-                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
                 android:layout_marginTop="10dp"/>
 
         <LinearLayout
@@ -36,10 +36,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingHorizontal="10dp"
-                android:paddingLeft="5dp"
+                android:paddingStart="5dp"
                 android:paddingTop="5dp"
                 android:paddingBottom="2dp"
-                android:text="Rose"
+                android:text="@string/name_contact"
                 android:textSize="30dp"
                 android:textColor="@color/colorName" />
 
@@ -51,7 +51,7 @@
                 android:paddingHorizontal="10dp"
                 android:paddingVertical="2dp"
                 android:paddingBottom="2dp"
-                android:text="How are you doing? This is a long message that should probably wrap."
+                android:text="@string/long_text"
                 android:textSize="13dp" />
         </LinearLayout>
         </LinearLayout>

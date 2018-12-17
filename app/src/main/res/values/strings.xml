@@ -14,7 +14,12 @@
     <string name="text_location_permission">Chunk needs to access to your gps location. </string>
     <string name="ok">OK </string>
     <string name="title_activity_chunk_position">ChunkPosition</string>
-
+    <string name="send_chunk_button">Send the current location</string>
+    <string name="write_a_message">write a meessage</string>
+    <string name="create_a_new_chunk_title_activity">create a new chunk</string>
+    <string name="button_info_window">ENTER NOW</string>
+    <string name="name_contact">Rose</string>
+    <string name="long_text">How are you doing? This is a long message that should probably wrap.</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_personal_chunks">PersonalChunks</string>
