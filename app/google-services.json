@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "1012983815452",
+    "firebase_url": "https://chunk-2c740.firebaseio.com",
+    "project_id": "chunk-2c740",
+    "storage_bucket": "chunk-2c740.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1012983815452:android:86ca8d001e8c3c8b",
+        "android_client_info": {
+          "package_name": "com.chunk.ereafra.chunk"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1012983815452-8j1s04946gah4bjmv2d6389rsu4ts6m2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.chunk.ereafra.chunk",
+            "certificate_hash": "5e3f40a12e6f2e94711d17eb7235d845e941201f"
+          }
+        },
+        {
+          "client_id": "1012983815452-tpp6jibkk6dq7f55epjl2s4fle9dcqmk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAwn0maFUisryx8npiaFaSQd1XjstSIg2I"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1012983815452-tpp6jibkk6dq7f55epjl2s4fle9dcqmk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

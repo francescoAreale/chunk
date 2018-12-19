@@ -3,14 +3,17 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:clipToPadding="false"
-    android:paddingVertical="10dp">
+    android:paddingVertical="10dp"
+    android:nextFocusForward="@+id/messengerImageView">
 
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/messengerImageView"
         android:layout_width="34dp"
         android:layout_height="34dp"
-        android:src="@drawable/ic_account_circle_black_36dp" />
+        android:contentDescription="@string/image_user_sent"
+        android:src="@drawable/ic_account_circle_black_36dp"
+        android:nextFocusForward="@+id/messengerTextView"/>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/layoutMessage"
@@ -32,12 +35,16 @@
             android:paddingTop="5dp"
             android:paddingBottom="2dp"
             android:text="@string/name_contact"
-            android:textColor="@color/colorName" />
+            android:textColor="@color/colorName"
+            android:contentDescription="@string/name_user_sent"
+            android:nextFocusForward="@+id/messageTextView"
+            />
 
         <TextView
             android:id="@+id/messageTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:contentDescription="@string/message_user_sent"
             android:elevation="2dp"
             android:paddingHorizontal="10dp"
             android:paddingVertical="2dp"
@@ -54,7 +61,8 @@
             android:elevation="2dp"
             android:paddingHorizontal="10dp"
             android:paddingVertical="3dp"
-            android:paddingBottom="3dp" />
+            android:paddingBottom="3dp"
+            android:contentDescription="@string/message_user_sent"/>
 
     </LinearLayout>
 </RelativeLayout>

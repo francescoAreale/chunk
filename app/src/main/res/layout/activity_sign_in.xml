@@ -5,7 +5,8 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:background="@color/colorPrimary"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:nextFocusForward="@+id/sign_in_button">
 
     <ImageView
         android:id="@+id/welcome"
@@ -13,7 +14,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:src="@drawable/welcom_to_chunk"
-        android:text="Toolbar Title" />
+        android:text="Toolbar Title"
+        android:contentDescription="@string/welcome_chunk"/>
 
     <com.google.android.gms.common.SignInButton
         android:id="@+id/sign_in_button"
@@ -22,7 +24,8 @@
         android:layout_centerInParent="true"
         android:layout_gravity="bottom|center"
         android:layout_marginBottom="70dp"
-        android:visibility="visible" />
+        android:visibility="visible"
+        android:contentDescription="@string/sign_in"/>
 
     <ProgressBar
         android:id="@+id/progressBar"

@@ -2,6 +2,14 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
 
 android {
+    signingConfigs {
+        release {
+            keyAlias 'key0'
+            keyPassword 'androidfrancesco'
+            storeFile file('chunk_keystore.jks')
+            storePassword 'androidfrancesco'
+        }
+    }
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.chunk.ereafra.chunk"
@@ -13,6 +21,7 @@ android {
     }
     buildTypes {
         release {
+            signingConfig signingConfigs.release
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }

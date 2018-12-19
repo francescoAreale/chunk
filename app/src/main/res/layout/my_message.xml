@@ -5,7 +5,8 @@
     android:clipToPadding="false"
     android:paddingVertical="10dp"
     android:paddingStart="60dp"
-    android:paddingEnd="15dp">
+    android:paddingEnd="15dp"
+    android:nextFocusForward="@+id/messageTextView">
 
 
     <TextView
@@ -18,7 +19,9 @@
         android:padding="10dp"
         android:text="Placeholder message"
         android:textColor="#f5eeee"
-        android:textSize="18dp" />
+        android:textSize="18dp"
+        android:contentDescription="@string/my_message"
+        android:nextFocusForward="@+id/messageImageView"/>
 
     <ImageView
         android:id="@+id/messageImageView"
@@ -30,6 +33,7 @@
         android:elevation="2dp"
         android:paddingHorizontal="10dp"
         android:paddingVertical="3dp"
-        android:paddingBottom="3dp" />
+        android:paddingBottom="3dp"
+        android:contentDescription="my_message"/>
 
 </RelativeLayout>

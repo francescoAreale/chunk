@@ -48,14 +48,14 @@ public class GPSutils {
 
     public static void buildAlertMessageNoGps(final AppCompatActivity activity) {
         final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-        builder.setMessage(MESSAGE_GPS_ERROR)
+        builder.setMessage(R.string.MESSAGE_GPS_ERROR)
                 .setCancelable(false)
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
                         activity.startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
                     }
                 })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
                         dialog.cancel();
                     }

@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">chunk</string>
     <string name="title_activity_sign_in">SignInActivity</string>
+    <string name="welcome_chunk">welcome to chunk </string>
     <string name="sign_in">sign in</string>
     <string name="sign_out">sign out</string>
     <string name="title_activity_navigate_chunk">NavigateChunk</string>
@@ -25,4 +26,25 @@
     <string name="title_activity_personal_chunks">PersonalChunks</string>
     <string name="appwidget_text">EXAMPLE</string>
     <string name="add_widget">Add widget</string>
+    <string name="MESSAGE_GPS_ERROR">Your GPS seems to be disabled, do you want to enable it?</string>
+    <string name="yes">yes</string>
+    <string name="no">no</string>
+    <string name="description_text_send_message">put a message</string>
+    <string name="description_add_multimedia">add a photo to conversatione</string>
+    <string name="description_send_the_message">send the message</string>
+    <string name="description_map">map with chunk</string>
+    <string name="description_gps_button">load gps and your currents chunk</string>
+    <string name="insert_new_chunk_image">insert a new chunk image</string>
+    <string name="insert_new_chunk_title">insert a new chunk title</string>
+    <string name="select_position_of_chunk">insert a new chunk position</string>
+    <string name="chunk_position_select">chunk position selected</string>
+    <string name="chunk_create_button">create a new chunk</string>
+    <string name="image_chunk">image of chunk in the map</string>
+    <string name="image_user_sent">image of the user sending message</string>
+    <string name="name_user_sent">name of the user sending message</string>
+    <string name="message_user_sent"> message received from a user</string>
+    <string name="my_message">my message chunk </string>
+    <string name="center_map">center of the map</string>
+    <string name="send_the_actual_position">send the actual position pointed</string>
+    <string name="get_the_actual_position">get the actual position from gps</string>
 </resources>

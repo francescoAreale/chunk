@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".NavigateChunk">
+    tools:context=".NavigateChunk"
+    android:nextFocusForward="@+id/map_explore_chunk">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -30,7 +31,8 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:src="@drawable/chunk_logo"
-                    android:text="Toolbar Title" />
+                    android:text="Toolbar Title"
+                    android:contentDescription="@string/app_name"/>
 
             </android.support.v7.widget.Toolbar>
         </android.support.design.widget.AppBarLayout>
@@ -39,8 +41,9 @@
             android:id="@+id/map_explore_chunk"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingTop="50dp" />
-
+            android:paddingTop="50dp"
+            android:contentDescription="@string/description_map"
+            android:nextFocusForward="@+id/fab"/>
     </LinearLayout>
 
     <ProgressBar
@@ -52,6 +55,7 @@
         android:layout_centerInParent="true"
         android:layout_gravity="top|center"
         android:layout_marginTop="80dp"
+
         />
     <android.support.design.widget.FloatingActionButton
     android:id="@+id/fab"
@@ -62,7 +66,9 @@
     android:layout_marginEnd="10dp"
     android:layout_marginBottom="30dp"
     android:tint="@android:color/background_light"
-    app:srcCompat="@android:drawable/ic_menu_compass" />
+    app:srcCompat="@android:drawable/ic_menu_compass"
+        android:contentDescription="@string/description_gps_button"
+        android:nextFocusForward="@+id/map_explore_chunk"/>
 
 
 </android.support.design.widget.CoordinatorLayout>
