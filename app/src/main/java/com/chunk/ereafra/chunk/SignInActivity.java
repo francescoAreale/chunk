@@ -53,40 +53,40 @@ public class SignInActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         String done = prefs.getString(IntroActivity.PRESENTATION_DONE,"");
-        if(done != IntroActivity.PRESENTATION_DONE) {
-            startActivity(new Intent(SignInActivity.this, IntroActivity.class));
+        if(!done.equals(IntroActivity.PRESENTATION_DONE)) {
+            startActivity(new Intent(this, IntroActivity.class));
             finish();
+        }else {
+            LoginUtils.performLoginWithGoogle(this, this, this);
+            if (User.getInstance().isLogged()) {
+                startActivity(new Intent(SignInActivity.this, NavigateChunk.class));
+                finish();
+            }
+            GPSutils.asksForAllPermission(this);
+
+
+            progress = (ProgressBar) findViewById(R.id.progressBar);
+            progress.setVisibility(View.GONE);
+            // GPSutils.asksForAllPermission(this);
+            // Assign fields
+            mSignInButton = (SignInButton) findViewById(R.id.sign_in_button);
+
+            // Set click listeners
+            mSignInButton.setOnClickListener(this);
+
+            // Configure Google Sign In
+            GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestIdToken(getString(R.string.default_web_client_id))
+                    .requestEmail()
+                    .build();
+
+            mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+            mAuth = FirebaseAuth.getInstance();
+            // Initialize FirebaseAuth
+            mFirebaseAuth = FirebaseAuth.getInstance();
         }
-        LoginUtils.performLoginWithGoogle(this,this,this);
-        if(User.getInstance().isLogged()){
-            startActivity(new Intent(SignInActivity.this, NavigateChunk.class));
-            finish();
-        }
-        GPSutils.asksForAllPermission(this);
-
-
-        progress = (ProgressBar)findViewById(R.id.progressBar) ;
-        progress.setVisibility(View.GONE);
-       // GPSutils.asksForAllPermission(this);
-        // Assign fields
-        mSignInButton = (SignInButton) findViewById(R.id.sign_in_button);
-
-        // Set click listeners
-        mSignInButton.setOnClickListener(this);
-
-        // Configure Google Sign In
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
-
-        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-        mAuth = FirebaseAuth.getInstance();
-        // Initialize FirebaseAuth
-        mFirebaseAuth = FirebaseAuth.getInstance();
-
     }
 
     @Override

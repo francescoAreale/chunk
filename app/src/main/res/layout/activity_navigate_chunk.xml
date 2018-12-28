@@ -68,6 +68,19 @@
     android:tint="@android:color/background_light"
     app:srcCompat="@android:drawable/ic_menu_compass"
         android:contentDescription="@string/description_gps_button"
+        android:nextFocusForward="@+id/fab_load_center"/>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_load_center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="90dp"
+        android:tint="@android:color/background_light"
+        app:srcCompat="@drawable/ic_refresh"
+        android:contentDescription="@string/description_gps_button"
         android:nextFocusForward="@+id/map_explore_chunk"/>
 
 

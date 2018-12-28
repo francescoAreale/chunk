@@ -269,10 +269,26 @@ public class MapChunk implements VisualizeChunkInterface<Chunk> {
         return result;
     }
 
+    public void setCenterOnTheMap(double lat, double longitude){
+        IMapController mapController = map.getController();
+        mapController.setZoom(10);
+        GeoPoint startPoint = new GeoPoint(lat, longitude);
+        mapController.setCenter(startPoint);
+    }
+
     public void setMapToCenter(){
-        mapController.animateTo(mLocationOverlay.getMyLocation());
-        mapController.setCenter(mLocationOverlay.getMyLocation());
-        mapController.setZoom(15);
+        if(mLocationOverlay.getMyLocation()!=null && mLocationOverlay.getMyLocation()!=null)
+        {
+            mapController.animateTo(mLocationOverlay.getMyLocation());
+            mapController.setCenter(mLocationOverlay.getMyLocation());
+            mapController.setZoom(20);
+        }
+    }
+
+    public void loadCurrentChunkOnCenterPosition() {
+
+            FirebaseUtils.getChunkAroundLocation(map.getMapCenter().getLatitude(),
+                    map.getMapCenter().getLongitude(), 2.0, this);
     }
 
     public void loadCurrentChunkOnActualPosition() {
@@ -283,7 +299,7 @@ public class MapChunk implements VisualizeChunkInterface<Chunk> {
         //mapController.setZoom(20);
         if (mLocationOverlay.getMyLocation() != null)
             FirebaseUtils.getChunkAroundLocation(mLocationOverlay.getMyLocation().getLatitude(),
-                    mLocationOverlay.getMyLocation().getLongitude(), 1.0, this);
+                    mLocationOverlay.getMyLocation().getLongitude(), 2.0, this);
     }
 
     @Override

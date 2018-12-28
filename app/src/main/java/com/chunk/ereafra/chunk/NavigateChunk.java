@@ -23,21 +23,36 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.chunk.ereafra.chunk.Model.Entity.User;
+import com.chunk.ereafra.chunk.Model.PlaceModel.AddressFromNetwork;
 import com.chunk.ereafra.chunk.Model.PlaceModel.MapChunk;
+import com.chunk.ereafra.chunk.Model.PlaceModel.Place;
 import com.chunk.ereafra.chunk.Utils.FirebaseUtils;
 import com.chunk.ereafra.chunk.Utils.GPSutils;
 import com.chunk.ereafra.chunk.Utils.LoginUtils;
 import com.chunk.ereafra.chunk.Utils.NetworkUtils;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.constants.OpenStreetMapTileProviderConstants;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
+
+import java.lang.reflect.Type;
+import java.util.HashMap;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -46,7 +61,9 @@ public class NavigateChunk extends AppCompatActivity implements GoogleApiClient.
     private static String TAG = "NavigateChunk";
     public MapChunk mapChunk= null;
     private FloatingActionButton fab ;
+    private FloatingActionButton fab2 ;
     public  ProgressBar pbar = null;
+    RequestQueue queue = null;
     @Override
     protected void onStart() {
         super.onStart();
@@ -68,7 +85,7 @@ public class NavigateChunk extends AppCompatActivity implements GoogleApiClient.
         getSupportActionBar().setDisplayShowCustomEnabled(true);
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         pbar = (ProgressBar) findViewById(R.id.progressBar);
-        pbar.setVisibility(View.VISIBLE);
+        pbar.setVisibility(View.INVISIBLE);
         Toast.makeText(NavigateChunk.this, R.string.loading_chunk, Toast.LENGTH_LONG).show();
         //GPSutils.checkGpsStatus(this);
         // Check that the activity is using the layout version with
@@ -93,6 +110,17 @@ public class NavigateChunk extends AppCompatActivity implements GoogleApiClient.
                 mapChunk.loadCurrentChunkOnActualPosition();
             }
         });
+
+        fab2 = (FloatingActionButton) findViewById(R.id.fab_load_center);
+        fab2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                    mapChunk.loadCurrentChunkOnCenterPosition();
+                    Toast.makeText(NavigateChunk.this,"loading chunk around ...",Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
 
         //mapChunk.initializeOSM();
         GpsMyLocationProvider provider = new GpsMyLocationProvider(this);
@@ -119,6 +147,8 @@ public class NavigateChunk extends AppCompatActivity implements GoogleApiClient.
                 mapChunk.loadCurrentChunkOnActualPosition();
             }
         });
+        queue = Volley.newRequestQueue(this);
+        parseCoordinatesReceived();
     }
 
     @Override
@@ -126,6 +156,40 @@ public class NavigateChunk extends AppCompatActivity implements GoogleApiClient.
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_menu, menu);
         return true;
+    }
+
+
+
+    public void parseCoordinatesReceived() {
+
+// Request a string response from the provided URL.
+        StringRequest stringRequest = new StringRequest(Request.Method.GET,
+                "https://ipapi.co/json/",
+                new Response.Listener<String>() {
+
+                    @Override
+                    public void onResponse(String response) {
+                        Type type = new TypeToken<AddressFromNetwork>() {
+                        }.getType();
+                        AddressFromNetwork addr = new Gson().fromJson(response, type);
+                        mapChunk.setCenterOnTheMap(addr.getLatitude(),addr.getLongitude());
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(getApplicationContext(), "error on getting position from the network", Toast.LENGTH_SHORT).show();
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("User-Agent", "Mozilla/5.0 (Linux; Android 6.0.1; CPH1607 Build/MMB29M; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/63.0.3239.111 Mobile Safari/537.36");
+                return params;
+            }
+        };
+
+// Add the request to the RequestQueue.
+        queue.add(stringRequest);
     }
 
     @Override
