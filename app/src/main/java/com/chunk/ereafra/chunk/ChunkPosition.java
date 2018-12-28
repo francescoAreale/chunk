@@ -88,7 +88,8 @@ public class ChunkPosition extends AppCompatActivity {
     public void initializeOSM() {
         map = (MapView) findViewById(R.id.map);
         map.setTileSource(TileSourceFactory.MAPNIK);
-        map.setBuiltInZoomControls(true);
+        map.setBuiltInZoomControls(false);
+        map.setMultiTouchControls(true);
         lastLatitude = 0.0;
         lastLongitude = 0.0;
         map.setZoomRounding(false);

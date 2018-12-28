@@ -50,30 +50,11 @@ public class NavigateChunk extends AppCompatActivity implements GoogleApiClient.
     @Override
     protected void onStart() {
         super.onStart();
+        if(mapChunk!=null)
+            mapChunk.loadCurrentChunkOnActualPosition();
 
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case GPSutils.ALL_PERMISSIONS: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                } else {
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
-                }
-                return;
-            }
-
-            // other 'case' lines to check for other
-            // permissions this app might request.
-        }
-
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +69,7 @@ public class NavigateChunk extends AppCompatActivity implements GoogleApiClient.
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         pbar = (ProgressBar) findViewById(R.id.progressBar);
         pbar.setVisibility(View.VISIBLE);
+        Toast.makeText(NavigateChunk.this, R.string.loading_chunk, Toast.LENGTH_LONG).show();
         //GPSutils.checkGpsStatus(this);
         // Check that the activity is using the layout version with
         // the fragment_container FrameLayout
@@ -104,8 +86,9 @@ public class NavigateChunk extends AppCompatActivity implements GoogleApiClient.
             public void onClick(View view) {
                 if(!NetworkUtils.isOnline(NavigateChunk.this))
                 {
-                    Toast.makeText(NavigateChunk.this, "Please connect to the internet", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(NavigateChunk.this, R.string.impossible_connection, Toast.LENGTH_SHORT).show();
                 }
+                Toast.makeText(NavigateChunk.this, R.string.loading_chunk, Toast.LENGTH_SHORT).show();
                 mapChunk.setMapToCenter();
                 mapChunk.loadCurrentChunkOnActualPosition();
             }
@@ -118,7 +101,13 @@ public class NavigateChunk extends AppCompatActivity implements GoogleApiClient.
         locationOverlay.enableFollowLocation();
         locationOverlay.runOnFirstFix(new Runnable() {
             public void run() {
-                mapChunk.loadCurrentChunkOnActualPosition();
+                runOnUiThread(new Runnable() {
+                                  public void run() {
+                                      pbar.setVisibility(View.INVISIBLE);
+                                      mapChunk.loadCurrentChunkOnActualPosition();
+                                  }
+                              });
+
             }
         });
         mapChunk.getMap().getOverlayManager().add(locationOverlay);
@@ -126,7 +115,7 @@ public class NavigateChunk extends AppCompatActivity implements GoogleApiClient.
 
             @Override
             public void onFirstLayout(View v, int left, int top, int right, int bottom) {
-                pbar.setVisibility(View.INVISIBLE);
+               // pbar.setVisibility(View.INVISIBLE);
                 mapChunk.loadCurrentChunkOnActualPosition();
             }
         });
@@ -171,6 +160,7 @@ public class NavigateChunk extends AppCompatActivity implements GoogleApiClient.
         //if you make changes to the configuration, use
         //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         //Configuration.getInstance().load(this, PreferenceManager.getDefaultSharedPreferences(this));
+
         if(mapChunk!=null)
             mapChunk.getMap().onResume(); //needed for compass, my location overlays, v6.0.0 and up
     }

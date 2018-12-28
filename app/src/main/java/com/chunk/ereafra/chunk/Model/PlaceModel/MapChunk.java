@@ -155,7 +155,7 @@ public class MapChunk implements VisualizeChunkInterface<Chunk> {
             mapController = map.getController();
             mLocationOverlay.enableMyLocation();
             mLocationOverlay.enableFollowLocation();
-            mapController.setZoom(20);
+            mapController.setZoom(15);
             mapController.animateTo(mLocationOverlay.getMyLocation());
             mapController.setCenter(mLocationOverlay.getMyLocation());
             map.getOverlays().add(new MapEventsOverlay(new MapEventsReceiver() {
@@ -272,7 +272,7 @@ public class MapChunk implements VisualizeChunkInterface<Chunk> {
     public void setMapToCenter(){
         mapController.animateTo(mLocationOverlay.getMyLocation());
         mapController.setCenter(mLocationOverlay.getMyLocation());
-        mapController.setZoom(20);
+        mapController.setZoom(15);
     }
 
     public void loadCurrentChunkOnActualPosition() {
