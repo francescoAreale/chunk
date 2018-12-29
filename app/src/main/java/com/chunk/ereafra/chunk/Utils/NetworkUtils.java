@@ -37,6 +37,18 @@ public class NetworkUtils {
         return url;
     }
 
+    public static URL buildUrlForAddressTranslationToLatandLong(String address) {
+        URL url = null;
+        try {
+            url = new URL(BASE_URL_TRANSLATE_NOMINATIM + "/search/" + address.replace("//s","%20") + "?format=json&addressdetails=1");
+
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return url;
+    }
+
     public static boolean isOnline(Context context) {
         ConnectivityManager connMgr = (ConnectivityManager)
                 context.getSystemService(Context.CONNECTIVITY_SERVICE);

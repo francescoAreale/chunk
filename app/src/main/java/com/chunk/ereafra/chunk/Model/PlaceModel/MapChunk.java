@@ -274,6 +274,7 @@ public class MapChunk implements VisualizeChunkInterface<Chunk> {
         mapController.setZoom(10);
         GeoPoint startPoint = new GeoPoint(lat, longitude);
         mapController.setCenter(startPoint);
+        mapController.animateTo(startPoint);
     }
 
     public void setMapToCenter(){

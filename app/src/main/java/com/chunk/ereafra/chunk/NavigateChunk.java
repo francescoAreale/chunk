@@ -1,8 +1,6 @@
 package com.chunk.ereafra.chunk;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -11,7 +9,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -20,6 +17,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AutoCompleteTextView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -30,13 +29,10 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.bumptech.glide.Glide;
-import com.chunk.ereafra.chunk.Model.Entity.User;
 import com.chunk.ereafra.chunk.Model.PlaceModel.AddressFromNetwork;
+import com.chunk.ereafra.chunk.Model.PlaceModel.AutoCompleteAdapter;
 import com.chunk.ereafra.chunk.Model.PlaceModel.MapChunk;
 import com.chunk.ereafra.chunk.Model.PlaceModel.Place;
-import com.chunk.ereafra.chunk.Utils.FirebaseUtils;
-import com.chunk.ereafra.chunk.Utils.GPSutils;
 import com.chunk.ereafra.chunk.Utils.LoginUtils;
 import com.chunk.ereafra.chunk.Utils.NetworkUtils;
 import com.google.android.gms.common.ConnectionResult;
@@ -44,8 +40,6 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import org.osmdroid.config.Configuration;
-import org.osmdroid.tileprovider.constants.OpenStreetMapTileProviderConstants;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
@@ -53,8 +47,6 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
-
-import de.hdodenhof.circleimageview.CircleImageView;
 
 public class NavigateChunk extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, MapSearchChunk.OnFragmentInteractionListener {
 
@@ -116,7 +108,7 @@ public class NavigateChunk extends AppCompatActivity implements GoogleApiClient.
             @Override
             public void onClick(View view) {
                     mapChunk.loadCurrentChunkOnCenterPosition();
-                    Toast.makeText(NavigateChunk.this,"loading chunk around ...",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(NavigateChunk.this,R.string.loading_chunk_actual_position,Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -147,6 +139,24 @@ public class NavigateChunk extends AppCompatActivity implements GoogleApiClient.
                 mapChunk.loadCurrentChunkOnActualPosition();
             }
         });
+
+
+        final AutoCompleteTextView countrySearch = (AutoCompleteTextView) findViewById(R.id.search);
+        final AutoCompleteAdapter adapter = new AutoCompleteAdapter(this,android.R.layout.simple_dropdown_item_1line);
+        countrySearch.setAdapter(adapter);
+
+        //when autocomplete is clicked
+        countrySearch.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Place place = adapter.getItem(position);
+                String countryName = place.getDisplayName();
+                countrySearch.setText(countryName);
+                mapChunk.setCenterOnTheMap(Double.parseDouble(place.getLat()),Double.parseDouble(place.getLon()));
+                mapChunk.loadCurrentChunkOnCenterPosition();
+            }
+        });
+
         queue = Volley.newRequestQueue(this);
         parseCoordinatesReceived();
     }
@@ -171,13 +181,14 @@ public class NavigateChunk extends AppCompatActivity implements GoogleApiClient.
                     public void onResponse(String response) {
                         Type type = new TypeToken<AddressFromNetwork>() {
                         }.getType();
+
                         AddressFromNetwork addr = new Gson().fromJson(response, type);
                         mapChunk.setCenterOnTheMap(addr.getLatitude(),addr.getLongitude());
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getApplicationContext(), "error on getting position from the network", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getBaseContext(), "error on getting position from the network", Toast.LENGTH_SHORT).show();
             }
         }) {
             @Override
