@@ -14,10 +14,15 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AutoCompleteTextView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.chunk.ereafra.chunk.Model.PlaceModel.AutoCompleteAdapter;
+import com.chunk.ereafra.chunk.Model.PlaceModel.MapChunk;
+import com.chunk.ereafra.chunk.Model.PlaceModel.Place;
 import com.chunk.ereafra.chunk.Utils.GPSutils;
 import com.chunk.ereafra.chunk.Utils.NetworkUtils;
 
@@ -45,6 +50,7 @@ public class ChunkPosition extends AppCompatActivity {
     LinearLayout sendLayoutButton = null;
     Double lastLatitude = null;
     Double lastLongitude = null;
+    MapChunk mapChunk ;
     public static final String LATITUDE_RESULT = "latitude";
     public static final String LONGITUDE_RESULT = "longitude";
     // ARROTONDAMENTO PER DIFETTO
@@ -65,7 +71,13 @@ public class ChunkPosition extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                if(!NetworkUtils.isOnline(ChunkPosition.this))
+                {
+                    Toast.makeText(ChunkPosition.this, R.string.impossible_connection, Toast.LENGTH_SHORT).show();
+                }
+                Toast.makeText(ChunkPosition.this, R.string.loading_chunk, Toast.LENGTH_SHORT).show();
+                mapChunk.setMapToCenter();
+               // mapChunk.loadCurrentChunkOnActualPosition();
             }
         });
         sendLayoutButton = (LinearLayout) findViewById(R.id.sendPosition);
@@ -82,43 +94,58 @@ public class ChunkPosition extends AppCompatActivity {
                 finish();
             }
         });
-        initializeOSM();
-    }
-
-    public void initializeOSM() {
-        map = (MapView) findViewById(R.id.map);
-        map.setTileSource(TileSourceFactory.MAPNIK);
-        map.setBuiltInZoomControls(false);
-        map.setMultiTouchControls(true);
         lastLatitude = 0.0;
         lastLongitude = 0.0;
-        map.setZoomRounding(false);
-        if (mLocationOverlay == null) {
-            mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(ChunkPosition.this), map);
-            map.getOverlays().add(mLocationOverlay);
-            mapController = map.getController();
-            mLocationOverlay.enableMyLocation();
-            mLocationOverlay.enableFollowLocation();
-            mapController.setZoom(20);
-            mapController.animateTo(mLocationOverlay.getMyLocation());
-            mapController.setCenter(mLocationOverlay.getMyLocation());
-            map.addMapListener(new MapListener() {
-                @Override
-                public boolean onScroll(ScrollEvent event) {
-                    lastLatitude = map.getMapCenter().getLatitude();
-                    lastLongitude = map.getMapCenter().getLongitude();
-                    textPosition.setText("(" + arrotondaPerDifetto(map.getMapCenter().getLongitude(), 6) + ","
-                            + arrotondaPerDifetto(map.getMapCenter().getLatitude(), 6) + ")");
-                    Log.d("scroll", "lat: " + map.getMapCenter().getLatitude());
-                    return true;
-                }
+        mapChunk = new MapChunk(this,R.id.map);
+        mapChunk.getMap().addMapListener(new MapListener() {
+            @Override
+            public boolean onScroll(ScrollEvent event) {
+                lastLatitude = mapChunk.getMap().getMapCenter().getLatitude();
+                lastLongitude = mapChunk.getMap().getMapCenter().getLongitude();
+                textPosition.setText("(" + arrotondaPerDifetto(mapChunk.getMap().getMapCenter().getLongitude(), 6) + ","
+                        + arrotondaPerDifetto(mapChunk.getMap().getMapCenter().getLatitude(), 6) + ")");
+                return true;
+            }
 
-                @Override
-                public boolean onZoom(ZoomEvent event) {
-                    return false;
-                }
-            });
-        }
+            @Override
+            public boolean onZoom(ZoomEvent event) {
+                return false;
+            }
+        });
+
+        mapChunk.getmLocationOverlay().runOnFirstFix(new Runnable() {
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        mapChunk.setMapToCenter();
+                        //mapChunk.loadCurrentChunkOnActualPosition();
+                    }
+                });
+
+            }
+        });
+
+        mapChunk.parseCoordinatesReceived();
+
+        final AutoCompleteTextView countrySearch = (AutoCompleteTextView) findViewById(R.id.search);
+        final AutoCompleteAdapter adapter = new AutoCompleteAdapter(this,android.R.layout.simple_dropdown_item_1line);
+        countrySearch.setAdapter(adapter);
+
+        //when autocomplete is clicked
+        countrySearch.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Place place = adapter.getItem(position);
+                String countryName = place.getDisplayName();
+                countrySearch.setText(countryName);
+                lastLatitude = Double.parseDouble(place.getLat());
+                lastLongitude = Double.parseDouble(place.getLon());
+                mapChunk.setCenterOnTheMap(Double.parseDouble(place.getLat()),Double.parseDouble(place.getLon()));
+                //mapChunk.loadCurrentChunkOnCenterPosition();
+            }
+        });
     }
+
+
 
 }

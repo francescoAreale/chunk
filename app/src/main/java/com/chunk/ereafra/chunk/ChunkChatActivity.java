@@ -87,6 +87,7 @@ public class ChunkChatActivity extends AppCompatActivity implements GoogleApiCli
     private ImageView mAddMessageImageView;
     public static final String ID_OF_CHAT = "id_of_chunk_chat";
     private Chunk chunk_release;
+    private TextView noMessageText;
     // shared preference
     private SharedPreferences mSharedPreferences;
 
@@ -191,6 +192,7 @@ public class ChunkChatActivity extends AppCompatActivity implements GoogleApiCli
             @Override
             protected void onBindViewHolder(@NonNull MessageViewHolder holder, int position, @NonNull MessageChat message) {
                 mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+                noMessageText.setVisibility(View.INVISIBLE);
                 bindOtherViewHolder(holder, message);
             }
         };
@@ -240,7 +242,8 @@ public class ChunkChatActivity extends AppCompatActivity implements GoogleApiCli
         mLinearLayoutManager = new LinearLayoutManager(this);
         mLinearLayoutManager.setStackFromEnd(true);
         mMessageRecyclerView.setLayoutManager(mLinearLayoutManager);
-
+        mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+        noMessageText = (TextView) findViewById(R.id.no_message);
         // mProgressBar.setVisibility(ProgressBar.INVISIBLE);
         initializeFirebase();
 

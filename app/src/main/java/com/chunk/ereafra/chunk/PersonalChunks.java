@@ -61,6 +61,7 @@ public class PersonalChunks extends AppCompatActivity implements GoogleApiClient
     private FirebaseRecyclerAdapter<String, PersonalChunks.ChunkViewHolder> mFirebaseAdapter;
     private LinearLayoutManager mLinearLayoutManager;
     private int mAppWidgetId ;
+    private TextView noMessageText;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,6 +70,7 @@ public class PersonalChunks extends AppCompatActivity implements GoogleApiClient
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         getSupportActionBar().setDisplayShowCustomEnabled(true);
+        noMessageText = (TextView) findViewById(R.id.no_message);
         mMessageRecyclerView = (RecyclerView) findViewById(R.id.personaChunks);
         mLinearLayoutManager = new LinearLayoutManager(getApplicationContext());
         //mLinearLayoutManager.setStackFromEnd(true);
@@ -136,7 +138,7 @@ public class PersonalChunks extends AppCompatActivity implements GoogleApiClient
 
             @Override
             protected void onBindViewHolder(@NonNull final PersonalChunks.ChunkViewHolder holder, int position, @NonNull final String idChat) {
-
+                noMessageText.setVisibility(View.GONE);
                 FirebaseDatabase.getInstance().getReference().child(FirebaseUtils.CHAT_TITLE).
                         child(idChat).
                         addValueEventListener(new ValueEventListener() {

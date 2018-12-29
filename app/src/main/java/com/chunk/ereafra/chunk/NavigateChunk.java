@@ -40,6 +40,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import org.osmdroid.api.IMapController;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
@@ -55,13 +56,9 @@ public class NavigateChunk extends AppCompatActivity implements GoogleApiClient.
     private FloatingActionButton fab ;
     private FloatingActionButton fab2 ;
     public  ProgressBar pbar = null;
-    RequestQueue queue = null;
     @Override
     protected void onStart() {
         super.onStart();
-        if(mapChunk!=null)
-            mapChunk.loadCurrentChunkOnActualPosition();
-
     }
 
 
@@ -70,7 +67,7 @@ public class NavigateChunk extends AppCompatActivity implements GoogleApiClient.
         super.onCreate(savedInstanceState);
         LoginUtils.performLoginWithGoogle(this, this, this);
         setContentView(R.layout.activity_navigate_chunk);
-        mapChunk = new MapChunk(this,null);
+        mapChunk = new MapChunk(this,R.id.map_explore_chunk);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -78,7 +75,6 @@ public class NavigateChunk extends AppCompatActivity implements GoogleApiClient.
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         pbar = (ProgressBar) findViewById(R.id.progressBar);
         pbar.setVisibility(View.INVISIBLE);
-        Toast.makeText(NavigateChunk.this, R.string.loading_chunk, Toast.LENGTH_LONG).show();
         //GPSutils.checkGpsStatus(this);
         // Check that the activity is using the layout version with
         // the fragment_container FrameLayout
@@ -115,31 +111,21 @@ public class NavigateChunk extends AppCompatActivity implements GoogleApiClient.
 
 
         //mapChunk.initializeOSM();
-        GpsMyLocationProvider provider = new GpsMyLocationProvider(this);
-        provider.addLocationSource(LocationManager.NETWORK_PROVIDER);
-        MyLocationNewOverlay locationOverlay = new MyLocationNewOverlay( provider, mapChunk.getMap());
-        locationOverlay.enableFollowLocation();
-        locationOverlay.runOnFirstFix(new Runnable() {
+       mapChunk.getmLocationOverlay().runOnFirstFix(new Runnable() {
             public void run() {
                 runOnUiThread(new Runnable() {
                                   public void run() {
                                       pbar.setVisibility(View.INVISIBLE);
+                                      mapChunk.setMapToCenter();
                                       mapChunk.loadCurrentChunkOnActualPosition();
                                   }
                               });
 
             }
         });
-        mapChunk.getMap().getOverlayManager().add(locationOverlay);
-        mapChunk.getMap().addOnFirstLayoutListener(new MapView.OnFirstLayoutListener() {
 
-            @Override
-            public void onFirstLayout(View v, int left, int top, int right, int bottom) {
-               // pbar.setVisibility(View.INVISIBLE);
-                mapChunk.loadCurrentChunkOnActualPosition();
-            }
-        });
-
+       // if(mapChunk.getmLocationOverlay().getMyLocation()==null)
+         mapChunk.parseCoordinatesReceived();
 
         final AutoCompleteTextView countrySearch = (AutoCompleteTextView) findViewById(R.id.search);
         final AutoCompleteAdapter adapter = new AutoCompleteAdapter(this,android.R.layout.simple_dropdown_item_1line);
@@ -157,8 +143,7 @@ public class NavigateChunk extends AppCompatActivity implements GoogleApiClient.
             }
         });
 
-        queue = Volley.newRequestQueue(this);
-        parseCoordinatesReceived();
+
     }
 
     @Override
@@ -170,38 +155,6 @@ public class NavigateChunk extends AppCompatActivity implements GoogleApiClient.
 
 
 
-    public void parseCoordinatesReceived() {
-
-// Request a string response from the provided URL.
-        StringRequest stringRequest = new StringRequest(Request.Method.GET,
-                "https://ipapi.co/json/",
-                new Response.Listener<String>() {
-
-                    @Override
-                    public void onResponse(String response) {
-                        Type type = new TypeToken<AddressFromNetwork>() {
-                        }.getType();
-
-                        AddressFromNetwork addr = new Gson().fromJson(response, type);
-                        mapChunk.setCenterOnTheMap(addr.getLatitude(),addr.getLongitude());
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getBaseContext(), "error on getting position from the network", Toast.LENGTH_SHORT).show();
-            }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("User-Agent", "Mozilla/5.0 (Linux; Android 6.0.1; CPH1607 Build/MMB29M; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/63.0.3239.111 Mobile Safari/537.36");
-                return params;
-            }
-        };
-
-// Add the request to the RequestQueue.
-        queue.add(stringRequest);
-    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

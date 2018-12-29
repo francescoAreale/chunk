@@ -24,7 +24,15 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
@@ -37,6 +45,8 @@ import com.chunk.ereafra.chunk.Model.Interface.VisualizeChunkInterface;
 import com.chunk.ereafra.chunk.R;
 import com.chunk.ereafra.chunk.Utils.FirebaseUtils;
 import com.chunk.ereafra.chunk.Utils.GPSutils;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 
@@ -57,10 +67,13 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.util.HashMap;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -71,6 +84,8 @@ public class MapChunk implements VisualizeChunkInterface<Chunk> {
     MyLocationNewOverlay mLocationOverlay = null;
     LocationManager manager = null;
     Context context;
+    RequestQueue queue = null;
+
     /** Base path for osmdroid files. Zip files are in this folder. */
     public static File OSMDROID_PATH = new File(Environment.getExternalStorageDirectory(),
             "osmdroid");
@@ -99,7 +114,7 @@ public class MapChunk implements VisualizeChunkInterface<Chunk> {
     }
 
 
-    public MapChunk(Context context, MapView map) {
+    public MapChunk(Context context, int id_map) {
         this.context = context;
         Configuration.getInstance().setExpirationOverrideDuration(365L * 24L * 3600L * 1000L);
         Configuration.getInstance().setTileFileSystemCacheMaxBytes(1024L * 1024L * 1024L * 10L);
@@ -109,13 +124,14 @@ public class MapChunk implements VisualizeChunkInterface<Chunk> {
         Configuration.getInstance().setOsmdroidTileCache(OSMDROID_PATH);
         //LinearLayout contentLayout = (LinearLayout)((Activity)contfiext).findViewById(R.id.layout_map);
         //this.map  = new MapView(context);
-        this.map = ((Activity)context).findViewById(R.id.map_explore_chunk);
+        this.map = ((Activity)context).findViewById(id_map);
        /* this.map.setTileSource(TileSourceFactory.MAPNIK);
         org.osmdroid.views.MapView.LayoutParams mapParams = new org.osmdroid.views.MapView.LayoutParams(
                 org.osmdroid.views.MapView.LayoutParams.MATCH_PARENT,
                 org.osmdroid.views.MapView.LayoutParams.MATCH_PARENT,
                 null, 0, 0, 0);*/
         initializeOSM();
+        queue = Volley.newRequestQueue(context);
        // contentLayout.addView( this.map, mapParams);
     }
 
@@ -132,6 +148,43 @@ public class MapChunk implements VisualizeChunkInterface<Chunk> {
             e.printStackTrace();
             return null;
         }
+    }
+
+
+    public void parseCoordinatesReceived() {
+
+// Request a string response from the provided URL.
+        StringRequest stringRequest = new StringRequest(Request.Method.GET,
+                "https://ipapi.co/json/",
+                new Response.Listener<String>() {
+
+                    @Override
+                    public void onResponse(String response) {
+                        Type type = new TypeToken<AddressFromNetwork>() {
+                        }.getType();
+
+                        AddressFromNetwork addr = new Gson().fromJson(response, type);
+                        if(getmLocationOverlay().getMyLocation()==null) {
+                            setCenterOnTheMap(addr.getLatitude(), addr.getLongitude());
+                            loadCurrentChunkOnCenterPosition();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(context, "error on getting position from the network", Toast.LENGTH_SHORT).show();
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("User-Agent", "Mozilla/5.0 (Linux; Android 6.0.1; CPH1607 Build/MMB29M; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/63.0.3239.111 Mobile Safari/537.36");
+                return params;
+            }
+        };
+
+// Add the request to the RequestQueue.
+        queue.add(stringRequest);
     }
 
     public MapView getMap() {
@@ -153,8 +206,8 @@ public class MapChunk implements VisualizeChunkInterface<Chunk> {
             mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(context), map);
             map.getOverlays().add(mLocationOverlay);
             mapController = map.getController();
+            //mLocationOverlay.enableFollowLocation();
             mLocationOverlay.enableMyLocation();
-            mLocationOverlay.enableFollowLocation();
             mapController.setZoom(15);
             mapController.animateTo(mLocationOverlay.getMyLocation());
             mapController.setCenter(mLocationOverlay.getMyLocation());
@@ -271,18 +324,34 @@ public class MapChunk implements VisualizeChunkInterface<Chunk> {
 
     public void setCenterOnTheMap(double lat, double longitude){
         IMapController mapController = map.getController();
-        mapController.setZoom(10);
-        GeoPoint startPoint = new GeoPoint(lat, longitude);
-        mapController.setCenter(startPoint);
-        mapController.animateTo(startPoint);
+        GeoPoint locationOnMap = new GeoPoint(lat, longitude);
+        mapController.animateTo(locationOnMap);
+        mapController.setCenter(locationOnMap);
+        map.setVisibility(View.VISIBLE);
+        Marker startMarker = new Marker(map);
+        startMarker.setPosition(locationOnMap);
+        startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+        map.getOverlays().clear();
+        map.getOverlays().add(startMarker);
+        map.getOverlays().add(new MapEventsOverlay(new MapEventsReceiver() {
+
+            @Override
+            public boolean singleTapConfirmedHelper(GeoPoint p) {
+                ChunkInfoWindow.closeAllInfoWindowsOn(map);
+                return true;
+            }
+
+            @Override
+            public boolean longPressHelper(GeoPoint p) {
+                return false;
+            }
+        }));
     }
 
     public void setMapToCenter(){
-        if(mLocationOverlay.getMyLocation()!=null && mLocationOverlay.getMyLocation()!=null)
+        if(mLocationOverlay.getMyLocation()!=null)
         {
-            mapController.animateTo(mLocationOverlay.getMyLocation());
-            mapController.setCenter(mLocationOverlay.getMyLocation());
-            mapController.setZoom(20);
+            this.setCenterOnTheMap(mLocationOverlay.getMyLocation().getLatitude(), mLocationOverlay.getMyLocation().getLongitude());
         }
     }
 

@@ -65,5 +65,6 @@
     <string name="description_4">You can always chat in the chat previous joined </string>
     <string name="title_5">Start to talk!</string>
     <string name="description_5">share your text and photos with people of your chunk</string>
-    <string name="hint_address">search address</string>
+    <string name="hint_address">search chunk address</string>
+    <string name="no_message_until_now">no message until now</string>
 </resources>

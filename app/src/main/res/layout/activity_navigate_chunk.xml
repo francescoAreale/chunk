@@ -42,7 +42,7 @@
             android:layout_height="match_parent"
             android:paddingTop="50dp"
             android:contentDescription="@string/description_map"
-            android:nextFocusForward="@+id/fab"/>
+            android:nextFocusForward="@+id/search"/>
     </LinearLayout>
 
     <AutoCompleteTextView
@@ -53,6 +53,8 @@
         android:layout_marginTop="90dp"
         android:layout_gravity="center|top"
         android:background="@drawable/customborder"
+        android:padding="10dp"
+        android:nextFocusForward="@+id/fab"
         />
 
     <ProgressBar
