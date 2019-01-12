@@ -1,14 +1,28 @@
 package com.chunk.ereafra.chunk.Utils;
 
+import android.content.Context;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.HttpHeaderParser;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.chunk.ereafra.chunk.Model.ChatModel.Chat;
 import com.chunk.ereafra.chunk.Model.Entity.Chunk;
 import com.chunk.ereafra.chunk.Model.Entity.User;
 import com.chunk.ereafra.chunk.Model.Interface.VisualizeChunkInterface;
+import com.chunk.ereafra.chunk.R;
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
@@ -21,13 +35,22 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
+
+import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class FirebaseUtils {
 
@@ -50,6 +73,7 @@ public class FirebaseUtils {
             }
         });
     }
+
 
     public static void addChatToUser(final String idUser, final String idChunk) {
         FirebaseDatabase.getInstance().getReference().child(CHAT_USERS).
@@ -101,6 +125,72 @@ public class FirebaseUtils {
         });
     }
 
+
+    public static void sendNotification(Context context) {
+            RequestQueue requestQueue = Volley.newRequestQueue(context);
+            String URL = "https://fcm.googleapis.com/v1/projects/chunk-2c740/messages:send";
+            JSONObject json = new JSONObject();
+            JSONObject jsonData = new JSONObject();
+            JSONObject jsonMessage = new JSONObject();
+
+            try {
+                jsonData.put("body", "Hi!! This is the message from device");
+                jsonData.put("title", "dummy title");
+                json.put("notification", jsonData);
+                json.put( "topic", "weather");
+                jsonMessage.put("message", json);
+            } catch (JSONException e1) {
+                e1.printStackTrace();
+            }
+
+            final String requestBody = jsonMessage.toString();
+
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, URL, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    Log.i("VOLLEY", response);
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.e("VOLLEY", error.toString());
+                }
+            }) {
+
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String, String> params = new HashMap<String, String>();
+                    params.put("Authorization", "Bearer key=AAAA69qKXRw:APA91bFVQL4DjxkE0MIwx_51FGDWfbElEMoO6Bn8cqFvZVoM2HUZUHh4LbUifQZoW95Sg2I2lmzujSkSlCswRcdl0bQNeAWz_1KtNVKaD7GGj7rmoEc5T1hOirX-EHFDPbjlmVt7Ioke");
+
+                    params.put("Content-Type", "application/json; charset=UTF-8");
+                    return params;
+                }
+
+                @Override
+                public byte[] getBody() throws AuthFailureError {
+                    try {
+                        return requestBody == null ? null : requestBody.getBytes("utf-8");
+                    } catch (UnsupportedEncodingException uee) {
+                        VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", requestBody, "utf-8");
+                        return null;
+                    }
+                }
+
+                @Override
+                protected Response<String> parseNetworkResponse(NetworkResponse response) {
+                    String responseString = "";
+                    if (response != null) {
+                        responseString = String.valueOf(response.statusCode);
+                        // can get more details such as response.headers
+                    }
+                    return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
+                }
+            };
+
+            requestQueue.add(stringRequest);
+
+    }
+
     public static void getChunkAroundLocation(double latitude, double longitude,
                                               double radiuskm, final VisualizeChunkInterface<Chunk> objectVisualizer) {
 
@@ -110,7 +200,6 @@ public class FirebaseUtils {
         geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
             @Override
             public void onKeyEntered(String key, GeoLocation location) {
-                System.out.println(String.format("Key %s entered the search area at [%f,%f]", key, location.latitude, location.longitude));
                 getChunkFromID(key, objectVisualizer);
             }
 
@@ -121,7 +210,6 @@ public class FirebaseUtils {
 
             @Override
             public void onKeyMoved(String key, GeoLocation location) {
-                System.out.println(String.format("Key %s moved within the search area to [%f,%f]", key, location.latitude, location.longitude));
             }
 
             @Override

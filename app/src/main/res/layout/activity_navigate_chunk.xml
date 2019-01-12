@@ -31,7 +31,6 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:src="@drawable/chunk_logo"
-                    android:text="Toolbar Title"
                     android:contentDescription="@string/app_name"/>
 
             </android.support.v7.widget.Toolbar>
@@ -50,7 +49,7 @@
         android:layout_height="50dp"
         android:hint="@string/hint_address"
         android:id="@+id/search"
-        android:layout_marginTop="90dp"
+        android:layout_marginTop="70dp"
         android:layout_gravity="center|top"
         android:background="@drawable/customborder"
         android:padding="10dp"

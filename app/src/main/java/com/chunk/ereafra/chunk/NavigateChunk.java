@@ -1,5 +1,6 @@
 package com.chunk.ereafra.chunk;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -17,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.ProgressBar;
@@ -33,6 +35,7 @@ import com.chunk.ereafra.chunk.Model.PlaceModel.AddressFromNetwork;
 import com.chunk.ereafra.chunk.Model.PlaceModel.AutoCompleteAdapter;
 import com.chunk.ereafra.chunk.Model.PlaceModel.MapChunk;
 import com.chunk.ereafra.chunk.Model.PlaceModel.Place;
+import com.chunk.ereafra.chunk.Utils.FirebaseUtils;
 import com.chunk.ereafra.chunk.Utils.LoginUtils;
 import com.chunk.ereafra.chunk.Utils.NetworkUtils;
 import com.google.android.gms.common.ConnectionResult;
@@ -137,9 +140,11 @@ public class NavigateChunk extends AppCompatActivity implements GoogleApiClient.
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Place place = adapter.getItem(position);
                 String countryName = place.getDisplayName();
-                countrySearch.setText(countryName);
+                countrySearch.setText(countryName.substring(0,10) + getString(R.string.etc));
                 mapChunk.setCenterOnTheMap(Double.parseDouble(place.getLat()),Double.parseDouble(place.getLon()));
                 mapChunk.loadCurrentChunkOnCenterPosition();
+                InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
             }
         });
 

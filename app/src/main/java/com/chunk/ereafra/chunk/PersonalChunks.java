@@ -6,6 +6,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -70,6 +71,8 @@ public class PersonalChunks extends AppCompatActivity implements GoogleApiClient
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         getSupportActionBar().setDisplayShowCustomEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
         noMessageText = (TextView) findViewById(R.id.no_message);
         mMessageRecyclerView = (RecyclerView) findViewById(R.id.personaChunks);
         mLinearLayoutManager = new LinearLayoutManager(getApplicationContext());
@@ -146,6 +149,7 @@ public class PersonalChunks extends AppCompatActivity implements GoogleApiClient
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 Chat chat = (Chat) dataSnapshot.getValue(Chat.class);
                                 holder.TitleChunk.setText(chat.getTitleChat());
+                                holder.urlImage = chat.getUrlImage();
                                 Glide.with(getApplicationContext())
                                         .load(chat.getUrlImage())
                                         .into(holder.chunkImgView);
@@ -172,6 +176,12 @@ public class PersonalChunks extends AppCompatActivity implements GoogleApiClient
         });
 
         mMessageRecyclerView.setAdapter(mFirebaseAdapter);
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 
     @Override
@@ -214,6 +224,7 @@ public class PersonalChunks extends AppCompatActivity implements GoogleApiClient
         TextView TitleChunk;
         CircleImageView chunkImgView;
         Chunk chunk;
+        String urlImage;
         int mAppWidgetId = 0;
         Context contex;
 
@@ -231,7 +242,20 @@ public class PersonalChunks extends AppCompatActivity implements GoogleApiClient
             this.contex = contex;
             TitleChunk = (TextView) itemView.findViewById(R.id.TitleChat);
             lastMessage = (TextView) itemView.findViewById(R.id.messageTextView);
-            chunkImgView = (CircleImageView) itemView.findViewById(R.id.imageSingleChunk);
+            chunkImgView =  itemView.findViewById(R.id.imageSingleChunk);
+            chunkImgView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(v.getContext(), ShowImageFull.class);
+                    Bundle extras = new Bundle();
+                    extras.putString(ShowImageFull.IMAGE_TO_DISPLAY, urlImage);
+                    //extras.putString(ShowImageFull.IMAGE_USER, chunk.getImage());
+                    extras.putString(ShowImageFull.TITLE_CHUNK, chunk.getChunkName());
+                    intent.putExtras(extras);
+                    v.getContext().startActivity(intent);
+
+                }
+            });
             v.setOnClickListener(this);
         }
 

@@ -17,11 +17,10 @@
         android:background="@drawable/my_message"
         android:elevation="2dp"
         android:padding="10dp"
-        android:text="Placeholder message"
         android:textColor="#f5eeee"
-        android:textSize="18dp"
+        android:textSize="18sp"
         android:contentDescription="@string/my_message"
-        android:nextFocusForward="@+id/messageImageView"/>
+     />
 
     <ImageView
         android:id="@+id/messageImageView"
@@ -29,11 +28,10 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="3dp"
         android:adjustViewBounds="true"
-        android:background="@drawable/my_message"
         android:elevation="2dp"
         android:paddingHorizontal="10dp"
         android:paddingVertical="3dp"
         android:paddingBottom="3dp"
-        android:contentDescription="my_message"/>
+        android:contentDescription="@null"/>
 
 </RelativeLayout>

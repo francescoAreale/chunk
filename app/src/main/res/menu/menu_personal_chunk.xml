@@ -7,6 +7,6 @@
         app:showAsAction="never" />
     <item
         android:id="@+id/addChunk"
-        android:title="add a chunk"
+        android:title="@string/add_a_chunk"
         app:showAsAction="never" />
 </menu>

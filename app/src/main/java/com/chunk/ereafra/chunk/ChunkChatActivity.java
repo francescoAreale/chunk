@@ -2,14 +2,17 @@ package com.chunk.ereafra.chunk;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
@@ -62,7 +65,7 @@ public class ChunkChatActivity extends AppCompatActivity implements GoogleApiCli
     public static final String MESSAGES_CHILD = "messages";
     public static final String CHAT_CHILD = "chat";
     public static final int DEFAULT_MSG_LENGTH_LIMIT = 1000;
-    private static final String LOADING_IMAGE_URL = "https://www.google.com/images/spin-32.gif";
+    private static final String LOADING_IMAGE_URL = "https://loading.io/spinners/typing/lg.-text-entering-comment-loader.gif";
     private static final int REQUEST_IMAGE = 2;
 
     // google
@@ -88,7 +91,9 @@ public class ChunkChatActivity extends AppCompatActivity implements GoogleApiCli
     public static final String ID_OF_CHAT = "id_of_chunk_chat";
     private Chunk chunk_release;
     private TextView noMessageText;
+    private CircleImageView ImageViewTitleChunk;
     // shared preference
+    private TextView titleInToolbar;
     private SharedPreferences mSharedPreferences;
 
     @Override
@@ -168,6 +173,8 @@ public class ChunkChatActivity extends AppCompatActivity implements GoogleApiCli
                                     }
                                 });
                     } else {
+                        holder.downloadUri = message.getImageUrl();
+                        holder.chunk = chunk_release;
                         Glide.with(holder.messageImageView.getContext())
                                 .load(message.getImageUrl())
                                 .into(holder.messageImageView);
@@ -236,7 +243,20 @@ public class ChunkChatActivity extends AppCompatActivity implements GoogleApiCli
 
     public void initializeMainActivity() {
         // Initialize ProgressBar and RecyclerView.
-
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        //getSupportActionBar().setTitle(chunk_release.getChunkName());
+        ImageViewTitleChunk = findViewById(R.id.image_chunk);
+        Glide.with(getApplicationContext())
+                .load(chunk_release.getImage())
+                .into(ImageViewTitleChunk);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayShowCustomEnabled(false);
+        titleInToolbar = findViewById(R.id.title_chunk);
+        titleInToolbar.setText(chunk_release.getChunkName());
+        //getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
         mMessageRecyclerView = (RecyclerView) findViewById(R.id.messageRecyclerView);
         mLinearLayoutManager = new LinearLayoutManager(this);
@@ -295,6 +315,12 @@ public class ChunkChatActivity extends AppCompatActivity implements GoogleApiCli
                 startActivityForResult(intent, REQUEST_IMAGE);
             }
         });
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 
     @Override
@@ -369,11 +395,25 @@ public class ChunkChatActivity extends AppCompatActivity implements GoogleApiCli
 
         TextView messengerTextView;
         CircleImageView messengerImageView;
+        String downloadUri;
+        Chunk chunk;
 
         public MessageViewHolder(View v, Boolean isMineMessage) {
             super(v);
             messageTextView = (TextView) itemView.findViewById(R.id.messageTextView);
             messageImageView = (ImageView) itemView.findViewById(R.id.messageImageView);
+            messageImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(v.getContext(), ShowImageFull.class);
+                    Bundle extras = new Bundle();
+                    extras.putString(ShowImageFull.IMAGE_TO_DISPLAY, downloadUri);
+                    extras.putString(ShowImageFull.IMAGE_USER, chunk.getImage());
+                    extras.putString(ShowImageFull.TITLE_CHUNK, chunk.getChunkName());
+                    intent.putExtras(extras);
+                    v.getContext().startActivity(intent);
+                }
+            });
             if (!isMineMessage) {
                 messengerTextView = (TextView) itemView.findViewById(R.id.messengerTextView);
                 messengerImageView = (CircleImageView) itemView.findViewById(R.id.messengerImageView);
@@ -406,12 +446,13 @@ public class ChunkChatActivity extends AppCompatActivity implements GoogleApiCli
         });
     }
 
+    /*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_menu, menu);
         return true;
-    }
+    }*/
 
 
     @Override

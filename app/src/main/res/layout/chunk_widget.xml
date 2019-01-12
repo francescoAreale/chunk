@@ -1,17 +1,24 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/layout_widget"
+    android:orientation="vertical"
     android:padding="@dimen/widget_margin">
 
     <ImageView
         android:id="@+id/widget_image"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
+        android:layout_height="70dp"
+        android:layout_width="70dp"
         android:clickable="true"
-        android:layout_width="wrap_content"
+        android:focusable="true"
+        android:layout_gravity="center"
         android:contentDescription="@string/image_chunk"
         />
 
-</RelativeLayout>
+    <TextView
+        android:id="@+id/title_chunk"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"/>
+
+</LinearLayout>

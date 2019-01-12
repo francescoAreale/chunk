@@ -8,15 +8,15 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.VIBRATE" />
+
     <application
         android:allowBackup="true"
-        android:icon="@drawable/chunk_logo"
+        android:icon="@drawable/chunk_icon"
         android:label="@string/app_name"
-        android:roundIcon="@drawable/chunk_logo"
+        android:roundIcon="@drawable/chunk_icon"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        >
+        android:theme="@style/AppTheme">
         <activity android:name=".SignInActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,7 +27,8 @@
         <activity
             android:name=".NavigateChunk"
             android:label="@string/title_activity_sign_in"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
             android:name=".NewChunk"
             android:label="@string/title_activity_new_chunk" />
@@ -37,7 +38,8 @@
         <activity
             android:name=".ChunkPosition"
             android:label="@string/title_activity_chunk_position" />
-        <activity android:name=".IntroActivity"
+        <activity
+            android:name=".IntroActivity"
             android:label="IntroActivity" />
         <activity
             android:name=".PersonalChunks"
@@ -57,7 +59,7 @@
                 android:resource="@xml/chunk_widget_info" />
         </receiver>
 
-
+        <activity android:name=".ShowImageFull"/>
     </application>
 
 </manifest>

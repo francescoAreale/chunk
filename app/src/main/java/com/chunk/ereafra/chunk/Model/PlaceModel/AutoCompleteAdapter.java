@@ -11,14 +11,8 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.TextView;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.RequestFuture;
+
 import com.android.volley.toolbox.Volley;
 import com.chunk.ereafra.chunk.R;
 import com.chunk.ereafra.chunk.Utils.NetworkUtils;
@@ -36,9 +30,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
+
 
 public class AutoCompleteAdapter extends ArrayAdapter implements Filterable {
     private ArrayList<Place> mCountry;

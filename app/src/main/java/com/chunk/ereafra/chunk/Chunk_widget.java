@@ -58,7 +58,7 @@ public class Chunk_widget extends AppWidgetProvider {
                         .apply(new RequestOptions().override(500, 500))
                         .load(retrived_chunk_shared.getImage())
                         .into(appWidgetTarget);
-
+                views.setTextViewText(R.id.title_chunk, retrived_chunk_shared.getChunkName());
                 Intent intent = new Intent(context.getApplicationContext(), ChunkChatActivity.class);
                 Bundle b = new Bundle();
                 b.putParcelable(ChunkChatActivity.ID_OF_CHAT, retrived_chunk_shared); //Your id

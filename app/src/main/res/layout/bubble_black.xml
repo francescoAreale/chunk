@@ -45,17 +45,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="#FFFFFF"
-            android:textSize="12dp"
+            android:textSize="12sp"
             android:maxEms="17"
-            android:text="Description"
             android:visibility="gone"/>
         <TextView android:id="@+id/bubble_subdescription"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="#FFFFFF"
-            android:textSize="10dp"
+            android:textSize="12sp"
             android:maxEms="17"
-            android:text="Address"
             android:visibility="gone" />
 
 </LinearLayout>

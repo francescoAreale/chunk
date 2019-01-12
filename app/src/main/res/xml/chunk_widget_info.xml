@@ -8,4 +8,4 @@
     android:resizeMode="horizontal|vertical"
     android:updatePeriodMillis="86400000"
     android:configure="com.chunk.ereafra.chunk.PersonalChunks"
-    android:widgetCategory="home_screen"></appwidget-provider>
+    android:widgetCategory="home_screen"/>

@@ -40,10 +40,11 @@
                 android:layout_height="wrap_content"
                 android:paddingHorizontal="10dp"
                 android:paddingStart="5dp"
+                android:paddingEnd="5dp"
                 android:paddingTop="5dp"
                 android:paddingBottom="2dp"
                 android:text="@string/name_contact"
-                android:textSize="30dp"
+                android:textSize="30sp"
                 android:textColor="@color/colorName"
                 android:contentDescription="@string/name_user_sent"
                 android:nextFocusForward="@+id/messageTextView"/>
@@ -57,7 +58,7 @@
                 android:paddingVertical="2dp"
                 android:paddingBottom="2dp"
                 android:text="@string/long_text"
-                android:textSize="13dp"
+                android:textSize="13sp"
                 android:contentDescription="@string/message_user_sent"/>
         </LinearLayout>
         </LinearLayout>

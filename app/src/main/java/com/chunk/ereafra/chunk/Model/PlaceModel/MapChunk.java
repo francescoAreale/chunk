@@ -37,9 +37,9 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.target.Target;
-import com.chunk.ereafra.chunk.ChunkChatActivity;
-import com.chunk.ereafra.chunk.ChunkPosition;
+import com.bumptech.glide.request.transition.Transition;
 import com.chunk.ereafra.chunk.Model.Entity.Chunk;
 import com.chunk.ereafra.chunk.Model.Interface.VisualizeChunkInterface;
 import com.chunk.ereafra.chunk.R;
@@ -47,15 +47,10 @@ import com.chunk.ereafra.chunk.Utils.FirebaseUtils;
 import com.chunk.ereafra.chunk.Utils.GPSutils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.koushikdutta.async.future.FutureCallback;
-import com.koushikdutta.ion.Ion;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.events.MapEventsReceiver;
-import org.osmdroid.events.MapListener;
-import org.osmdroid.events.ScrollEvent;
-import org.osmdroid.events.ZoomEvent;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
@@ -74,8 +69,6 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
-
-import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MapChunk implements VisualizeChunkInterface<Chunk> {
 
@@ -263,13 +256,15 @@ public class MapChunk implements VisualizeChunkInterface<Chunk> {
         GeoPoint locationOnMap = new GeoPoint(chunk.getLatitude(), chunk.getLongitude());
         final Marker startMarker = new Marker(map);
         startMarker.setPosition(locationOnMap);
-        Ion.with(context).load(chunk.getImage()).withBitmap().asBitmap()
-                .setCallback(new FutureCallback<Bitmap>() {
+        Glide.with(context)
+                .asBitmap()
+                .load(chunk.getImage())
+                .into(new SimpleTarget<Bitmap>() {
                     @Override
-                    public void onCompleted(Exception e, Bitmap result) {
-                        startMarker.setIcon(new BitmapDrawable(context.getResources(), createUserBitmap(chunk, result)));
+                    public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
+                        startMarker.setIcon(new BitmapDrawable(context.getResources(), createUserBitmap(chunk, resource)));
                         startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_TOP);
-                        startMarker.setInfoWindow(new ChunkInfoWindow(map, result, chunk));
+                        startMarker.setInfoWindow(new ChunkInfoWindow(map, resource, chunk));
                         map.getOverlays().add(startMarker);
                     }
                 });

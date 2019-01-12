@@ -32,6 +32,7 @@
             android:layout_height="wrap_content"
             android:paddingHorizontal="10dp"
             android:paddingStart="5dp"
+            android:paddingEnd="5dp"
             android:paddingTop="5dp"
             android:paddingBottom="2dp"
             android:text="@string/name_contact"
@@ -50,7 +51,7 @@
             android:paddingVertical="2dp"
             android:paddingBottom="2dp"
             android:text="@string/long_text"
-            android:textSize="15dp" />
+            android:textSize="15sp" />
 
         <ImageView
             android:id="@+id/messageImageView"

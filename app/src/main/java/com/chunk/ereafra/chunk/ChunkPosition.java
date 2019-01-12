@@ -1,5 +1,6 @@
 package com.chunk.ereafra.chunk;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.location.LocationManager;
 import android.net.Uri;
@@ -14,6 +15,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.LinearLayout;
@@ -137,11 +139,10 @@ public class ChunkPosition extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Place place = adapter.getItem(position);
                 String countryName = place.getDisplayName();
-                countrySearch.setText(countryName);
-                lastLatitude = Double.parseDouble(place.getLat());
-                lastLongitude = Double.parseDouble(place.getLon());
+                countrySearch.setText(countryName.substring(0,10) + getString(R.string.etc));
                 mapChunk.setCenterOnTheMap(Double.parseDouble(place.getLat()),Double.parseDouble(place.getLon()));
-                //mapChunk.loadCurrentChunkOnCenterPosition();
+                InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
             }
         });
     }
