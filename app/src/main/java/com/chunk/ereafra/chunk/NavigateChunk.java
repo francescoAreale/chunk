@@ -140,7 +140,8 @@ public class NavigateChunk extends AppCompatActivity implements GoogleApiClient.
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Place place = adapter.getItem(position);
                 String countryName = place.getDisplayName();
-                countrySearch.setText(countryName.substring(0,10) + getString(R.string.etc));
+                String search_to_display = countryName.substring(0,10) + getString(R.string.etc);
+                countrySearch.setText(search_to_display);
                 mapChunk.setCenterOnTheMap(Double.parseDouble(place.getLat()),Double.parseDouble(place.getLon()));
                 mapChunk.loadCurrentChunkOnCenterPosition();
                 InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);

@@ -104,8 +104,9 @@ public class ChunkPosition extends AppCompatActivity {
             public boolean onScroll(ScrollEvent event) {
                 lastLatitude = mapChunk.getMap().getMapCenter().getLatitude();
                 lastLongitude = mapChunk.getMap().getMapCenter().getLongitude();
-                textPosition.setText("(" + arrotondaPerDifetto(mapChunk.getMap().getMapCenter().getLongitude(), 6) + ","
-                        + arrotondaPerDifetto(mapChunk.getMap().getMapCenter().getLatitude(), 6) + ")");
+                String message_for_text_position = "(" + arrotondaPerDifetto(mapChunk.getMap().getMapCenter().getLongitude(), 6) + ","
+                        + arrotondaPerDifetto(mapChunk.getMap().getMapCenter().getLatitude(), 6) + ")";
+                textPosition.setText(message_for_text_position);
                 return true;
             }
 
@@ -139,7 +140,8 @@ public class ChunkPosition extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Place place = adapter.getItem(position);
                 String countryName = place.getDisplayName();
-                countrySearch.setText(countryName.substring(0,10) + getString(R.string.etc));
+                String search = countryName.substring(0,10) + getString(R.string.etc);
+                countrySearch.setText(search);
                 mapChunk.setCenterOnTheMap(Double.parseDouble(place.getLat()),Double.parseDouble(place.getLon()));
                 InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(view.getWindowToken(), 0);

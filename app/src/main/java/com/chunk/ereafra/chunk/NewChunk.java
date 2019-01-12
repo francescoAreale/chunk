@@ -250,7 +250,8 @@ public class NewChunk extends AppCompatActivity {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                positionsTextView.setText(getString(R.string.error_on__request )+ error.getStackTrace());
+                String message_to_dispaly = getString(R.string.error_on__request )+ error.getStackTrace();
+                positionsTextView.setText(message_to_dispaly);
             }
         }) {
             @Override
