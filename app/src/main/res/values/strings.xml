@@ -74,4 +74,11 @@
     <string name = "user_agent">user-agent</string>
     <string name = "user_agent_per_nominatium">Mozilla/5.0 (Linux; Android 6.0.1; CPH1607 Build/MMB29M; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/63.0.3239.111 Mobile Safari/537.36</string>
     <string name = "etc">...</string>
+    <string name = "new_chunk_button">insert an image for chun</string>
+    <string name = "error_position_network">error getting the postion from the network</string>
+    <string name = "select_an_image_for_chunk">select an image for your chunk</string>
+    <string name = "select_a_title_for_chunk">select a title for your chunk</string>
+    <string name = "select_a_position_for_chunk">select a position for your chunk</string>
+    <string name = "google_play_error">error connecting with google play services </string>
+    <string name = "authentication_error">error of authentication ... retry with connection</string>
 </resources>

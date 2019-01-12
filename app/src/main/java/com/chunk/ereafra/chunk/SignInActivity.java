@@ -111,8 +111,7 @@ public class SignInActivity extends AppCompatActivity implements
         // be available.
         progress.setVisibility(View.GONE);
         mSignInButton.setVisibility(View.VISIBLE);
-        Log.d(TAG, "onConnectionFailed:" + connectionResult);
-        Toast.makeText(this, "Google Play Services error.", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, getString(R.string.google_play_error),Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -149,7 +148,6 @@ public class SignInActivity extends AppCompatActivity implements
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             User tmpUser = User.getInstance();
                             tmpUser.setLogged(true);
@@ -165,8 +163,7 @@ public class SignInActivity extends AppCompatActivity implements
                             // If sign in fails, display a message to the user.
                             progress.setVisibility(View.GONE);
                             mSignInButton.setVisibility(View.VISIBLE);
-                            Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            Snackbar.make(findViewById(R.id.sign_in_layout), "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
+                            Snackbar.make(findViewById(R.id.sign_in_layout), getString(R.string.authentication_error), Snackbar.LENGTH_SHORT).show();
                         }
 
                         // ...

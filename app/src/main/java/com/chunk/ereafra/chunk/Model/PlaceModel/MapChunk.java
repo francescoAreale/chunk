@@ -165,13 +165,13 @@ public class MapChunk implements VisualizeChunkInterface<Chunk> {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(context, "error on getting position from the network", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, context.getString(R.string.error_position_network), Toast.LENGTH_SHORT).show();
             }
         }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put("User-Agent", "Mozilla/5.0 (Linux; Android 6.0.1; CPH1607 Build/MMB29M; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/63.0.3239.111 Mobile Safari/537.36");
+                params.put("User-Agent", context.getString(R.string.user_agent_per_nominatium));
                 return params;
             }
         };

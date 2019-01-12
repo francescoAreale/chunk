@@ -193,17 +193,17 @@ public class NewChunk extends AppCompatActivity {
     private boolean commitOnFirebase() {
 
         if (titleChunk.getText().toString().equals("")) {
-            Toast.makeText(this, "Insert a Title", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.select_a_title_for_chunk), Toast.LENGTH_SHORT).show();
             return false;
         }
 
         if (imagePicURI == null) {
-            Toast.makeText(this, "Select an image for your chunk", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.select_an_image_for_chunk), Toast.LENGTH_SHORT).show();
             return false;
         }
 
         if (map.getMapCenter().getLatitude() == 0.0 || map.getMapCenter().getLongitude() == 0.0) {
-            Toast.makeText(this, "Select a position for your chunk", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.select_a_position_for_chunk), Toast.LENGTH_SHORT).show();
             return false;
         }
 
