@@ -55,6 +55,7 @@ public class LoginUtils {
                 tmpUser.setUserName(mFirebaseUser.getDisplayName());
                 tmpUser.setmGoogleApiClient(mGoogleSignInClient);
                 tmpUser.setmFirebaseUser(mFirebaseUser);
+                FirebaseUtils.registerUserToTopic(User.getInstance().getmFirebaseUser().getUid());
             }
         }
     }

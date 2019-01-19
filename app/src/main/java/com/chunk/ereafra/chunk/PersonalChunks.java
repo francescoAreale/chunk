@@ -148,14 +148,14 @@ public class PersonalChunks extends AppCompatActivity implements GoogleApiClient
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 Chat chat = (Chat) dataSnapshot.getValue(Chat.class);
+                                chat.setId(idChat);
                                 holder.TitleChunk.setText(chat.getTitleChat());
                                 holder.urlImage = chat.getUrlImage();
                                 Glide.with(getApplicationContext())
                                         .load(chat.getUrlImage())
                                         .into(holder.chunkImgView);
                                 holder.lastMessage.setText(chat.getLastMessage());
-                                holder.setChunk(new Chunk(null, chat.getTitleChat(),
-                                        0, 0.0, 0.0, idChat, chat.getUrlImage()));
+                                holder.setChat(chat);
                                 if(mAppWidgetId!=0)
                                     holder.setIsForWidget(mAppWidgetId);
                             }
@@ -223,7 +223,7 @@ public class PersonalChunks extends AppCompatActivity implements GoogleApiClient
         TextView lastMessage;
         TextView TitleChunk;
         CircleImageView chunkImgView;
-        Chunk chunk;
+        Chat chat;
         String urlImage;
         int mAppWidgetId = 0;
         Context contex;
@@ -250,7 +250,7 @@ public class PersonalChunks extends AppCompatActivity implements GoogleApiClient
                     Bundle extras = new Bundle();
                     extras.putString(ShowImageFull.IMAGE_TO_DISPLAY, urlImage);
                     //extras.putString(ShowImageFull.IMAGE_USER, chunk.getImage());
-                    extras.putString(ShowImageFull.TITLE_CHUNK, chunk.getChunkName());
+                    extras.putString(ShowImageFull.TITLE_CHUNK, chat.getTitleChat());
                     intent.putExtras(extras);
                     v.getContext().startActivity(intent);
 
@@ -259,8 +259,8 @@ public class PersonalChunks extends AppCompatActivity implements GoogleApiClient
             v.setOnClickListener(this);
         }
 
-        public void setChunk(Chunk chunk) {
-            this.chunk = chunk;
+        public void setChat(Chat chat) {
+            this.chat = chat;
         }
 
         public void setIsForWidget(int isForWidget){
@@ -271,7 +271,7 @@ public class PersonalChunks extends AppCompatActivity implements GoogleApiClient
         public void onClick(View v) {
             if(mAppWidgetId != 0)
             {
-                saveHashMap(String.valueOf(mAppWidgetId),chunk);
+                saveHashMap(String.valueOf(mAppWidgetId),chat);
                 Intent intent = new Intent();
                 intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
 // Use an array and EXTRA_APPWIDGET_IDS instead of AppWidgetManager.EXTRA_APPWIDGET_ID,
@@ -287,10 +287,10 @@ public class PersonalChunks extends AppCompatActivity implements GoogleApiClient
                 ((Activity)contex).setResult(RESULT_OK, resultValue);
                 ((Activity)contex).finish();
             }
-             else if (this.chunk != null) {
+             else if (this.chat!= null) {
                 Intent intent = new Intent(v.getContext(), ChunkChatActivity.class);
                 Bundle b = new Bundle();
-                b.putParcelable(ChunkChatActivity.ID_OF_CHAT, this.chunk); //Your id
+                b.putParcelable(ChunkChatActivity.ID_OF_CHAT, this.chat); //Your id
                 intent.putExtras(b); //Put your id to your next Intent
                 v.getContext().startActivity(intent);
             }

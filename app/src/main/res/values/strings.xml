@@ -81,4 +81,6 @@
     <string name = "select_a_position_for_chunk">select a position for your chunk</string>
     <string name = "google_play_error">error connecting with google play services </string>
     <string name = "authentication_error">error of authentication ... retry with connection</string>
+    <string name = "notifications_admin_channel_name">chunk_admin</string>
+    <string name = "notifications_admin_channel_description">channel_for_chunk_admin</string>
 </resources>

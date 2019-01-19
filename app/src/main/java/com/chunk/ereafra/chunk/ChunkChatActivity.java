@@ -31,6 +31,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.chunk.ereafra.chunk.Model.ChatModel.Chat;
 import com.chunk.ereafra.chunk.Model.ChatModel.MessageChat;
 import com.chunk.ereafra.chunk.Model.Entity.Chunk;
 import com.chunk.ereafra.chunk.Model.Entity.User;
@@ -89,16 +90,18 @@ public class ChunkChatActivity extends AppCompatActivity implements GoogleApiCli
     private EditText mMessageEditText;
     private ImageView mAddMessageImageView;
     public static final String ID_OF_CHAT = "id_of_chunk_chat";
-    private Chunk chunk_release;
+    private Chat chat;
     private TextView noMessageText;
     private CircleImageView ImageViewTitleChunk;
     // shared preference
     private TextView titleInToolbar;
     private SharedPreferences mSharedPreferences;
-
+    public static String lastIdChat = "";
+    public static Boolean isVisible ;
     @Override
     protected void onStart() {
         super.onStart();
+        isVisible = true;
         LoginUtils.performLoginWithGoogle(this, this, this);
     }
 
@@ -121,7 +124,7 @@ public class ChunkChatActivity extends AppCompatActivity implements GoogleApiCli
             }
         };
 
-        DatabaseReference messagesRef = mFirebaseDatabaseReference.child(MESSAGES_CHILD).child(chunk_release.getChatOfChunkID());
+        DatabaseReference messagesRef = mFirebaseDatabaseReference.child(MESSAGES_CHILD).child(chat.getId());
         FirebaseRecyclerOptions<MessageChat> options =
                 new FirebaseRecyclerOptions.Builder<MessageChat>()
                         .setQuery(messagesRef, parser)
@@ -174,7 +177,7 @@ public class ChunkChatActivity extends AppCompatActivity implements GoogleApiCli
                                 });
                     } else {
                         holder.downloadUri = message.getImageUrl();
-                        holder.chunk = chunk_release;
+                        holder.chat = chat;
                         Glide.with(holder.messageImageView.getContext())
                                 .load(message.getImageUrl())
                                 .into(holder.messageImageView);
@@ -249,13 +252,13 @@ public class ChunkChatActivity extends AppCompatActivity implements GoogleApiCli
         //getSupportActionBar().setTitle(chunk_release.getChunkName());
         ImageViewTitleChunk = findViewById(R.id.image_chunk);
         Glide.with(getApplicationContext())
-                .load(chunk_release.getImage())
+                .load(chat.getUrlImage())
                 .into(ImageViewTitleChunk);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowCustomEnabled(false);
         titleInToolbar = findViewById(R.id.title_chunk);
-        titleInToolbar.setText(chunk_release.getChunkName());
+        titleInToolbar.setText(chat.getTitleChat());
         //getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
         mMessageRecyclerView = (RecyclerView) findViewById(R.id.messageRecyclerView);
@@ -298,9 +301,9 @@ public class ChunkChatActivity extends AppCompatActivity implements GoogleApiCli
                         User.getInstance().getUserName(),
                         User.getInstance().getPhotoUser(),
                         null /* no image */);
-                mFirebaseDatabaseReference.child(MESSAGES_CHILD).child(chunk_release.getChatOfChunkID())
+                mFirebaseDatabaseReference.child(MESSAGES_CHILD).child(chat.getId())
                         .push().setValue(friendlyMessage);
-                FirebaseUtils.updateChatOnFirebase(chunk_release, mMessageEditText.getText().toString());
+                FirebaseUtils.updateChatOnFirebase(chat, mMessageEditText.getText().toString());
                 mMessageEditText.setText("");
             }
         });
@@ -327,12 +330,17 @@ public class ChunkChatActivity extends AppCompatActivity implements GoogleApiCli
     public void onPause() {
         mFirebaseAdapter.stopListening();
         super.onPause();
+        isVisible=false;
+        lastIdChat = "";
     }
 
     @Override
     public void onResume() {
         super.onResume();
         mFirebaseAdapter.startListening();
+        isVisible = true;
+        if(chat != null)
+            lastIdChat = chat.getId();
     }
 
     @Override
@@ -346,7 +354,8 @@ public class ChunkChatActivity extends AppCompatActivity implements GoogleApiCli
 
         Bundle b = getIntent().getExtras();
         if (b != null)
-            chunk_release = b.getParcelable(ID_OF_CHAT);
+            chat = b.getParcelable(ID_OF_CHAT);
+        lastIdChat = chat.getId();
         //initialize the main activity with
         initializeMainActivity();
 
@@ -365,7 +374,7 @@ public class ChunkChatActivity extends AppCompatActivity implements GoogleApiCli
 
                     MessageChat tempMessage = new MessageChat(null, User.getInstance().getUserName(), User.getInstance().getPhotoUser(),
                             LOADING_IMAGE_URL);
-                    mFirebaseDatabaseReference.child(MESSAGES_CHILD).child(chunk_release.getChatOfChunkID()).push()
+                    mFirebaseDatabaseReference.child(MESSAGES_CHILD).child(chat.getId()).push()
                             .setValue(tempMessage, new DatabaseReference.CompletionListener() {
                                 @Override
                                 public void onComplete(DatabaseError databaseError,
@@ -396,7 +405,7 @@ public class ChunkChatActivity extends AppCompatActivity implements GoogleApiCli
         TextView messengerTextView;
         CircleImageView messengerImageView;
         String downloadUri;
-        Chunk chunk;
+        Chat chat;
 
         public MessageViewHolder(View v, Boolean isMineMessage) {
             super(v);
@@ -408,8 +417,8 @@ public class ChunkChatActivity extends AppCompatActivity implements GoogleApiCli
                     Intent intent = new Intent(v.getContext(), ShowImageFull.class);
                     Bundle extras = new Bundle();
                     extras.putString(ShowImageFull.IMAGE_TO_DISPLAY, downloadUri);
-                    extras.putString(ShowImageFull.IMAGE_USER, chunk.getImage());
-                    extras.putString(ShowImageFull.TITLE_CHUNK, chunk.getChunkName());
+                    extras.putString(ShowImageFull.IMAGE_USER, chat.getUrlImage());
+                    extras.putString(ShowImageFull.TITLE_CHUNK, chat.getTitleChat());
                     intent.putExtras(extras);
                     v.getContext().startActivity(intent);
                 }
@@ -438,9 +447,9 @@ public class ChunkChatActivity extends AppCompatActivity implements GoogleApiCli
                     MessageChat friendlyMessage =
                             new MessageChat(null, User.getInstance().getUserName(), User.getInstance().getPhotoUser(),
                                     downUri.toString());
-                    mFirebaseDatabaseReference.child(MESSAGES_CHILD).child(chunk_release.getChatOfChunkID()).child(key)
+                    mFirebaseDatabaseReference.child(MESSAGES_CHILD).child(chat.getId()).child(key)
                             .setValue(friendlyMessage);
-                    FirebaseUtils.updateChatOnFirebase(chunk_release, "Photo");
+                    FirebaseUtils.updateChatOnFirebase(chat, "Photo");
                 }
             }
         });

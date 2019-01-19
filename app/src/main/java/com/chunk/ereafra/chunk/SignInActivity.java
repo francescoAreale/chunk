@@ -13,6 +13,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.chunk.ereafra.chunk.Model.Entity.User;
+import com.chunk.ereafra.chunk.Utils.FirebaseUtils;
 import com.chunk.ereafra.chunk.Utils.GPSutils;
 import com.chunk.ereafra.chunk.Utils.LoginUtils;
 import com.google.android.gms.auth.api.Auth;

@@ -15,7 +15,7 @@ import com.github.paolorotolo.appintro.model.SliderPage;
 public class IntroActivity extends AppIntro2 {
 
 
-    public static final String PRESENTATION_DONE = "done3";
+    public static final String PRESENTATION_DONE = "done4";
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

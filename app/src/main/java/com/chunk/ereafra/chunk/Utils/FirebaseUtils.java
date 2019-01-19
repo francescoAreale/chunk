@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -21,6 +22,7 @@ import com.android.volley.toolbox.Volley;
 import com.chunk.ereafra.chunk.Model.ChatModel.Chat;
 import com.chunk.ereafra.chunk.Model.Entity.Chunk;
 import com.chunk.ereafra.chunk.Model.Entity.User;
+import com.chunk.ereafra.chunk.Model.Interface.GetChatFromIDInterface;
 import com.chunk.ereafra.chunk.Model.Interface.VisualizeChunkInterface;
 import com.chunk.ereafra.chunk.R;
 import com.firebase.geofire.GeoFire;
@@ -30,6 +32,7 @@ import com.firebase.geofire.GeoQueryEventListener;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -74,6 +77,52 @@ public class FirebaseUtils {
         });
     }
 
+    public static void registerUserToTopic(String idUser)
+    {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference().child("users_chat").child(idUser);
+        myRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                String id = (String)dataSnapshot.getValue();
+                FirebaseUtils.registerTopic(id);
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+       /* myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // This method is called once with the initial value and again
+                // whenever data at this location is updated.
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.w(TAG, "Failed to read value.", error.toException());
+            }
+        });*/
+    }
 
     public static void addChatToUser(final String idUser, final String idChunk) {
         FirebaseDatabase.getInstance().getReference().child(CHAT_USERS).
@@ -103,6 +152,31 @@ public class FirebaseUtils {
 
     }
 
+    public static void registerTopic(String message){
+        FirebaseMessaging.getInstance().subscribeToTopic(message);
+    }
+
+    public static void getChatFromId(final String Id, final GetChatFromIDInterface<Chat> chatInterface){
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference().child("chat").child(Id);
+        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // This method is called once with the initial value and again
+                // whenever data at this location is updated.
+                Chat chat = dataSnapshot.getValue(Chat.class);
+                chat.setId(Id);
+                chatInterface.onChatReceived(chat);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.w(TAG, "Failed to read value.", error.toException());
+            }
+        });
+    }
+
     public static void getChunkFromID(String ID, final VisualizeChunkInterface<Chunk> objectVisualizer) {
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -125,71 +199,6 @@ public class FirebaseUtils {
         });
     }
 
-
-    public static void sendNotification(Context context) {
-            RequestQueue requestQueue = Volley.newRequestQueue(context);
-            String URL = "https://fcm.googleapis.com/v1/projects/chunk-2c740/messages:send";
-            JSONObject json = new JSONObject();
-            JSONObject jsonData = new JSONObject();
-            JSONObject jsonMessage = new JSONObject();
-
-            try {
-                jsonData.put("body", "Hi!! This is the message from device");
-                jsonData.put("title", "dummy title");
-                json.put("notification", jsonData);
-                json.put( "topic", "weather");
-                jsonMessage.put("message", json);
-            } catch (JSONException e1) {
-                e1.printStackTrace();
-            }
-
-            final String requestBody = jsonMessage.toString();
-
-            StringRequest stringRequest = new StringRequest(Request.Method.POST, URL, new Response.Listener<String>() {
-                @Override
-                public void onResponse(String response) {
-                    Log.i("VOLLEY", response);
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    Log.e("VOLLEY", error.toString());
-                }
-            }) {
-
-                @Override
-                public Map<String, String> getHeaders() throws AuthFailureError {
-                    Map<String, String> params = new HashMap<String, String>();
-                    params.put("Authorization", "Bearer key=AAAA69qKXRw:APA91bFVQL4DjxkE0MIwx_51FGDWfbElEMoO6Bn8cqFvZVoM2HUZUHh4LbUifQZoW95Sg2I2lmzujSkSlCswRcdl0bQNeAWz_1KtNVKaD7GGj7rmoEc5T1hOirX-EHFDPbjlmVt7Ioke");
-
-                    params.put("Content-Type", "application/json; charset=UTF-8");
-                    return params;
-                }
-
-                @Override
-                public byte[] getBody() throws AuthFailureError {
-                    try {
-                        return requestBody == null ? null : requestBody.getBytes("utf-8");
-                    } catch (UnsupportedEncodingException uee) {
-                        VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", requestBody, "utf-8");
-                        return null;
-                    }
-                }
-
-                @Override
-                protected Response<String> parseNetworkResponse(NetworkResponse response) {
-                    String responseString = "";
-                    if (response != null) {
-                        responseString = String.valueOf(response.statusCode);
-                        // can get more details such as response.headers
-                    }
-                    return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
-                }
-            };
-
-            requestQueue.add(stringRequest);
-
-    }
 
     public static void getChunkAroundLocation(double latitude, double longitude,
                                               double radiuskm, final VisualizeChunkInterface<Chunk> objectVisualizer) {
@@ -251,11 +260,10 @@ public class FirebaseUtils {
                 });
     }
 
-    public static void updateChatOnFirebase(final Chunk chunk, String Message) {
-        Chat newChat = new Chat(null, Message, (System.currentTimeMillis() / 1000),
-                chunk.getChunkName(), chunk.getImage());
-        FirebaseDatabase.getInstance().getReference().child(CHAT_TITLE).child(chunk.getChatOfChunkID())
-                .setValue(newChat);
+    public static void updateChatOnFirebase(Chat chat, String Message) {
+        chat.setLastMessage(Message);
+        FirebaseDatabase.getInstance().getReference().child(CHAT_TITLE).child(chat.getId())
+                .setValue(chat);
     }
 
     public static void createChatOnFirebase(final String idChunk, final Chunk newChunk) {
@@ -272,6 +280,7 @@ public class FirebaseUtils {
                             FirebaseDatabase.getInstance().getReference().child(CHUNK_TITLE).child(idChunk)
                                     .setValue(newChunk);
                             FirebaseUtils.addChatToUser(User.getInstance().getmFirebaseUser().getUid(), key);
+                            FirebaseUtils.registerTopic(key);
                         } else {
                             Log.w(TAG, "Unable to write message to database.",
                                     databaseError.toException());

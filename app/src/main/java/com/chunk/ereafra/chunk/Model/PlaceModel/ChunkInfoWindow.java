@@ -10,8 +10,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.chunk.ereafra.chunk.ChunkChatActivity;
+import com.chunk.ereafra.chunk.Model.ChatModel.Chat;
 import com.chunk.ereafra.chunk.Model.Entity.Chunk;
 import com.chunk.ereafra.chunk.Model.Entity.User;
+import com.chunk.ereafra.chunk.Model.Interface.GetChatFromIDInterface;
 import com.chunk.ereafra.chunk.NavigateChunk;
 import com.chunk.ereafra.chunk.NewChunk;
 import com.chunk.ereafra.chunk.R;
@@ -23,19 +25,22 @@ import org.osmdroid.views.overlay.infowindow.MarkerInfoWindow;
 
 import java.util.ArrayList;
 
-public class ChunkInfoWindow extends InfoWindow {
+public class ChunkInfoWindow extends InfoWindow implements GetChatFromIDInterface {
     Chunk chunk;
     MapView mapView;
     /**
      * @param mapView
      */
     private Bitmap image;
+    private Chat chat;
 
     public ChunkInfoWindow(MapView mapView, Bitmap image, Chunk chunk) {
         super(R.layout.bubble_black, mapView);
         this.image = image;
         this.chunk = chunk;
         this.mapView = mapView;
+
+        FirebaseUtils.getChatFromId(chunk.getChatOfChunkID(), this);
     }
 
     /**
@@ -78,11 +83,12 @@ public class ChunkInfoWindow extends InfoWindow {
             public void onClick(View v) {
                 Intent intent = new Intent(mView.getContext(), ChunkChatActivity.class);
                 Bundle b = new Bundle();
-                b.putParcelable(ChunkChatActivity.ID_OF_CHAT, chunk); //Your id
+                b.putParcelable(ChunkChatActivity.ID_OF_CHAT, chat); //Your id
                 intent.putExtras(b); //Put your id to your next Intent
                 mView.getContext().startActivity(intent);
                 FirebaseUtils.addChatToUser(User.getInstance().getmFirebaseUser().getUid(),
                         chunk.getChatOfChunkID());
+                FirebaseUtils.registerTopic(chunk.getChatOfChunkID());
             }
         });
 
@@ -104,5 +110,10 @@ public class ChunkInfoWindow extends InfoWindow {
             ((ViewGroup) mView.getParent()).removeView(mView);
             //onClose();
         }
+    }
+
+    @Override
+    public void onChatReceived(Object chat) {
+        this.chat = (Chat)chat;
     }
 }
