@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -74,6 +75,7 @@ public class PersonalChunks extends AppCompatActivity implements GoogleApiClient
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         noMessageText = (TextView) findViewById(R.id.no_message);
+
         mMessageRecyclerView = (RecyclerView) findViewById(R.id.personaChunks);
         mLinearLayoutManager = new LinearLayoutManager(getApplicationContext());
         //mLinearLayoutManager.setStackFromEnd(true);
@@ -135,6 +137,7 @@ public class PersonalChunks extends AppCompatActivity implements GoogleApiClient
             @Override
             public PersonalChunks.ChunkViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
                 LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
+
                 return new PersonalChunks.ChunkViewHolder(inflater.inflate(R.layout.item_personal_chat, viewGroup,
                         false),PersonalChunks.this);
             }
@@ -142,6 +145,7 @@ public class PersonalChunks extends AppCompatActivity implements GoogleApiClient
             @Override
             protected void onBindViewHolder(@NonNull final PersonalChunks.ChunkViewHolder holder, int position, @NonNull final String idChat) {
                 noMessageText.setVisibility(View.GONE);
+
                 FirebaseDatabase.getInstance().getReference().child(FirebaseUtils.CHAT_TITLE).
                         child(idChat).
                         addValueEventListener(new ValueEventListener() {
@@ -154,6 +158,25 @@ public class PersonalChunks extends AppCompatActivity implements GoogleApiClient
                                 Glide.with(getApplicationContext())
                                         .load(chat.getUrlImage())
                                         .into(holder.chunkImgView);
+                                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                                String done = prefs.getString(chat.getId(),"");
+                                String chatID = chat.getId();
+                                SharedPreferences prefs2 = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                                Boolean enable = prefs2.getBoolean("Notification"+chat.getId(),true);
+                                if(enable)
+                                    holder.no_sound.setVisibility(View.GONE);
+                                else
+                                    holder.no_sound.setVisibility(View.VISIBLE);
+
+                                if(!done.equals(chat.getLastMessage()))
+                                {
+                                    holder.new_message.setVisibility(View.VISIBLE);
+                                    holder.lastMessage.setTypeface(null, Typeface.BOLD_ITALIC);
+
+                                }else{
+                                    holder.new_message.setVisibility(View.GONE);
+                                    holder.lastMessage.setTypeface(null, Typeface.NORMAL);
+                                }
                                 holder.lastMessage.setText(chat.getLastMessage());
                                 holder.setChat(chat);
                                 if(mAppWidgetId!=0)
@@ -227,6 +250,8 @@ public class PersonalChunks extends AppCompatActivity implements GoogleApiClient
         String urlImage;
         int mAppWidgetId = 0;
         Context contex;
+        TextView new_message;
+        ImageView no_sound;
 
         public void saveHashMap(String key , Object obj) {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(contex);
@@ -237,12 +262,16 @@ public class PersonalChunks extends AppCompatActivity implements GoogleApiClient
             editor.apply();     // This line is IMPORTANT !!!
         }
 
+
+
         public ChunkViewHolder(View v, Context contex) {
             super(v);
             this.contex = contex;
             TitleChunk = (TextView) itemView.findViewById(R.id.TitleChat);
             lastMessage = (TextView) itemView.findViewById(R.id.messageTextView);
+            new_message = (TextView)itemView.findViewById(R.id.new_message);
             chunkImgView =  itemView.findViewById(R.id.imageSingleChunk);
+            no_sound = itemView.findViewById(R.id.no_sound_icon);
             chunkImgView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

@@ -151,12 +151,27 @@ public class ChunkChatActivity extends AppCompatActivity implements GoogleApiCli
 
 
             public void bindOtherViewHolder(final MessageViewHolder holder, MessageChat message) {
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                SharedPreferences.Editor editor = prefs.edit();
+                if(this.getItem(this.getItemCount()-1).getText() != null)
+                {
+                    editor.putString(chat.getId(),this.getItem(this.getItemCount()-1).getText());
+                    editor.apply();
+                }
+                else{
+                    editor.putString(chat.getId(),"Photo");
+                    editor.apply();
+                }
+
+                   // This line is, IMPORTANT !!!
                 if (message.getText() != null) {
                     holder.messageTextView.setText(message.getText());
                     holder.messageTextView.setVisibility(TextView.VISIBLE);
                     holder.messageImageView.setVisibility(ImageView.GONE);
+
                 } else if (message.getImageUrl() != null) {
                     String imageUrl = message.getImageUrl();
+
                     if (imageUrl.startsWith("gs://")) {
                         StorageReference storageReference = FirebaseStorage.getInstance()
                                 .getReferenceFromUrl(imageUrl);
@@ -205,6 +220,8 @@ public class ChunkChatActivity extends AppCompatActivity implements GoogleApiCli
                 noMessageText.setVisibility(View.INVISIBLE);
                 bindOtherViewHolder(holder, message);
             }
+
+
         };
 
         mFirebaseAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
@@ -235,6 +252,22 @@ public class ChunkChatActivity extends AppCompatActivity implements GoogleApiCli
                 LoginUtils.performSignOut(this);
                 finish();
                 return true;
+            case R.id.notification_disable:
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putBoolean("Notification" + chat.getId(),false);
+                editor.apply();
+                invalidateOptionsMenu();
+                Toast.makeText(this, getString(R.string.disabled_notification), Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.notification_enable:
+                SharedPreferences prefs2 = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                SharedPreferences.Editor editor2 = prefs2.edit();
+                editor2.putBoolean("Notification" + chat.getId(),true);
+                editor2.apply();
+                invalidateOptionsMenu();
+                Toast.makeText(this, getString(R.string.enabled_notifications), Toast.LENGTH_SHORT).show();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -245,6 +278,10 @@ public class ChunkChatActivity extends AppCompatActivity implements GoogleApiCli
      the messages path in the FirebaseUtils Realtime Database*/
 
     public void initializeMainActivity() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(chat.getId(), "No Message Until Now");
+        editor.apply();
         // Initialize ProgressBar and RecyclerView.
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -359,6 +396,7 @@ public class ChunkChatActivity extends AppCompatActivity implements GoogleApiCli
         //initialize the main activity with
         initializeMainActivity();
 
+
     }
 
     @Override
@@ -455,13 +493,19 @@ public class ChunkChatActivity extends AppCompatActivity implements GoogleApiCli
         });
     }
 
-    /*
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        String chatID = chat.getId();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        Boolean enable = prefs.getBoolean("Notification"+chat.getId(),true);
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_menu, menu);
+        if(enable)
+            inflater.inflate(R.menu.menu_chat_activity, menu);
+        else
+            inflater.inflate(R.menu.menu_chat_activity_disbale_not, menu);
         return true;
-    }*/
+    }
 
 
     @Override

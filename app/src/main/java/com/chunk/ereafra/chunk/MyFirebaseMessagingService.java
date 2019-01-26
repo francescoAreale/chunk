@@ -89,8 +89,22 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService impleme
         // message, here is where that should be initiated. See sendNotification method below.
     }
 
+    public int makeHash(String stringToHash)
+    {
+        int hash = 0;
+        for (int i = 0; i < stringToHash.length(); i++) {
+            hash = (hash << 5) - hash + stringToHash.charAt(i);
+        }
+        return hash;
+    }
+
     @Override
     public void onChatReceived(final Chat chat) {
+        String chatID = chat.getId();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        Boolean enable = prefs.getBoolean("Notification"+chat.getId(),true);
+        if(!enable)
+            return;
         Log.d(TAG, "chat title: " + ((Chat)chat).getId());
         if(!ChunkChatActivity.lastIdChat.equals(chat.getId())) {
             Intent notificationIntent = new Intent(this, ChunkChatActivity.class);
@@ -133,12 +147,15 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService impleme
                                             .setVibrate(new long[] { 0, 100, 200, 300 })
                                             .setSound(alarmSound)
                                             .setPriority(NotificationCompat.PRIORITY_HIGH)
-                                            .setStyle(new NotificationCompat.BigPictureStyle()
+                                            /*.setStyle(new NotificationCompat.BigPictureStyle()
                                                     .setSummaryText(chat.getLastMessage())
-                                                    .bigPicture(resource.copy(resource.getConfig(), true)))/*Notification with Image*/;
+                                                    .bigPicture(resource.copy(resource.getConfig(), true)))/*Notification with Image;*/
 
+                                            .setStyle(new NotificationCompat.MessagingStyle("Me")
+                                                        .setConversationTitle(chat.getTitleChat())
+                                                        .addMessage(chat.getLastMessage(), chat.getTimestamp(), chat.getTitleChat()) );// Pass in null for user.
 
-                            notificationManager.notify(notificationId, notificationBuilder.build());
+                            notificationManager.notify(makeHash(chat.getId()), notificationBuilder.build());
                         }
                     });
 

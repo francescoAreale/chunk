@@ -83,4 +83,8 @@
     <string name = "authentication_error">error of authentication ... retry with connection</string>
     <string name = "notifications_admin_channel_name">chunk_admin</string>
     <string name = "notifications_admin_channel_description">channel_for_chunk_admin</string>
+    <string name = "disable_notification">Disable Notification</string>
+    <string name = "disabled_notification">Disabled Notifications</string>
+    <string name = "enable_notification">Enable Notification</string>
+    <string name = "enabled_notifications">Enabled Notification</string>
 </resources>
