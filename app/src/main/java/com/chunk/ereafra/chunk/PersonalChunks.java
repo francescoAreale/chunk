@@ -63,6 +63,7 @@ public class PersonalChunks extends AppCompatActivity implements GoogleApiClient
     private FirebaseRecyclerAdapter<String, PersonalChunks.ChunkViewHolder> mFirebaseAdapter;
     private LinearLayoutManager mLinearLayoutManager;
     private int mAppWidgetId ;
+    private int size_of_text_to_remove = 22;
     private TextView noMessageText;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -164,7 +165,7 @@ public class PersonalChunks extends AppCompatActivity implements GoogleApiClient
                                 SharedPreferences prefs2 = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                                 Boolean enable = prefs2.getBoolean("Notification"+chat.getId(),true);
                                 if(enable)
-                                    holder.no_sound.setVisibility(View.GONE);
+                                    holder.no_sound.setVisibility(View.INVISIBLE);
                                 else
                                     holder.no_sound.setVisibility(View.VISIBLE);
 
@@ -174,10 +175,14 @@ public class PersonalChunks extends AppCompatActivity implements GoogleApiClient
                                     holder.lastMessage.setTypeface(null, Typeface.BOLD_ITALIC);
 
                                 }else{
-                                    holder.new_message.setVisibility(View.GONE);
+                                    holder.new_message.setVisibility(View.INVISIBLE);
                                     holder.lastMessage.setTypeface(null, Typeface.NORMAL);
                                 }
-                                holder.lastMessage.setText(chat.getLastMessage());
+                                String print = chat.getLastMessage();
+                                if(chat.getLastMessage().length() > size_of_text_to_remove){
+                                    print = chat.getLastMessage().substring(0,size_of_text_to_remove) + "...";
+                                }
+                                holder.lastMessage.setText(print);
                                 holder.setChat(chat);
                                 if(mAppWidgetId!=0)
                                     holder.setIsForWidget(mAppWidgetId);

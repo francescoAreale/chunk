@@ -4,21 +4,25 @@ import android.graphics.Bitmap;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.chunk.ereafra.chunk.Model.Entity.Chunk;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class ShowImageFull extends AppCompatActivity {
+public class ShowChunksFromMarker extends AppCompatActivity {
 
     private ImageView imageToDisplay;
     private CircleImageView chunkImageView;
     private TextView titleChunk;
-    public static String IMAGE_TO_DISPLAY = "image_to_display";
-    public static String IMAGE_USER = "image_user";
-    public static String TITLE_CHUNK = "title_user";
+    public static String LIST_OF_CHUNK = "list_of_chunks_to_use";
+    ArrayList<Chunk> listOfChunk;
 
     @Override
     public boolean onSupportNavigateUp() {
@@ -29,9 +33,8 @@ public class ShowImageFull extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_show_image_full);
+        setContentView(R.layout.activity_show_chunks_from_marker);
         imageToDisplay = findViewById(R.id.imageChunk);
-        chunkImageView = findViewById(R.id.chunk_image);
         titleChunk = findViewById(R.id.title_chunk);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -39,19 +42,27 @@ public class ShowImageFull extends AppCompatActivity {
         getSupportActionBar().setDisplayShowCustomEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         Bundle extras = getIntent().getExtras();
-        String imageDisplayed = (String) extras.getString(IMAGE_TO_DISPLAY);
-        String imageUser = (String) extras.getString(IMAGE_USER);
-        String titleChunkToShow = (String) extras.getString(TITLE_CHUNK);
+        listOfChunk =  extras.getParcelableArrayList(LIST_OF_CHUNK);
 
         Glide.with(this)
-                .load(imageDisplayed)
+                .load(listOfChunk.get(0).getImage())
                 .into(imageToDisplay);
+        titleChunk.setText(listOfChunk.get(0).getChunkName());
 
-        Glide.with(this)
-                .load(imageUser)
-                .into(chunkImageView);
+        imageToDisplay.setOnClickListener(new View.OnClickListener() {
+            int count = 1;
+            @Override
+            public void onClick(View v) {
+                if(listOfChunk.size() == count)
+                    count =0;
+                Glide.with(v)
+                        .load(listOfChunk.get(count).getImage())
+                        .into(imageToDisplay);
+                titleChunk.setText(listOfChunk.get(count).getChunkName());
+                count ++;
+            }
 
-        titleChunk.setText(titleChunkToShow);
-       // imageToDisplay.setImageBitmap(bmp );
+        });
+
     }
 }

@@ -8,16 +8,16 @@ admin.initializeApp();
 var topic = 'weather';
 
 // See documentation on defining a message payload.
-var message = {
-    notification: {
-        title: '$GOOG up 1.43% on the day',
-        body: '$GOOG gained 11.80 points to close at 835.67, up 1.43% on the day.'
-    },
-    topic: topic
-};
 
-exports.sendFollowerNotification = functions.database.ref('/chat/{}')
+exports.sendFollowerNotification = functions.database.ref('/chat/{id_of_chunk}/')
     .onWrite((change, context) => {
+        const id_of_chunk = context.params.id_of_chunk;
+        var message = {
+            data: {
+                chunk_id: id_of_chunk
+              },
+            topic: id_of_chunk
+        };
         // Send a message to devices subscribed to the provided topic.
         admin.messaging().send(message)
             .then((response) => {

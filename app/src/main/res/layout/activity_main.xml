@@ -66,8 +66,8 @@
             android:ellipsize="end"
             android:ems="10"
             android:hint="@string/write_a_message"
-            android:inputType="text"
             android:paddingHorizontal="15dp"
+            android:inputType="textMultiLine"
             android:singleLine="false"
             android:nextFocusForward="@+id/addMessageImageView"/>
 

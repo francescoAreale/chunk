@@ -2,6 +2,7 @@ package com.chunk.ereafra.chunk.Model.PlaceModel;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapShader;
@@ -16,11 +17,13 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.location.LocationManager;
 import android.media.ThumbnailUtils;
+import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.util.Pair;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -43,6 +46,7 @@ import com.bumptech.glide.request.transition.Transition;
 import com.chunk.ereafra.chunk.Model.Entity.Chunk;
 import com.chunk.ereafra.chunk.Model.Interface.VisualizeChunkInterface;
 import com.chunk.ereafra.chunk.R;
+import com.chunk.ereafra.chunk.ShowChunksFromMarker;
 import com.chunk.ereafra.chunk.Utils.FirebaseUtils;
 import com.chunk.ereafra.chunk.Utils.GPSutils;
 import com.google.gson.Gson;
@@ -67,8 +71,12 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class MapChunk implements VisualizeChunkInterface<Chunk> {
 
@@ -78,6 +86,7 @@ public class MapChunk implements VisualizeChunkInterface<Chunk> {
     LocationManager manager = null;
     Context context;
     RequestQueue queue = null;
+    Map<Pair<Double, Double>, ArrayList<Chunk>> mapOfChunk;
 
     /** Base path for osmdroid files. Zip files are in this folder. */
     public static File OSMDROID_PATH = new File(Environment.getExternalStorageDirectory(),
@@ -108,6 +117,7 @@ public class MapChunk implements VisualizeChunkInterface<Chunk> {
 
 
     public MapChunk(Context context, int id_map) {
+        mapOfChunk = new HashMap<>();
         this.context = context;
         Configuration.getInstance().setExpirationOverrideDuration(365L * 24L * 3600L * 1000L);
         Configuration.getInstance().setTileFileSystemCacheMaxBytes(1024L * 1024L * 1024L * 10L);
@@ -252,24 +262,44 @@ public class MapChunk implements VisualizeChunkInterface<Chunk> {
         this.context = context;
     }
 
-    public Marker createMarkerChunk(final Chunk chunk) {
-        GeoPoint locationOnMap = new GeoPoint(chunk.getLatitude(), chunk.getLongitude());
-        final Marker startMarker = new Marker(map);
-        startMarker.setPosition(locationOnMap);
-        Glide.with(context)
-                .asBitmap()
-                .load(chunk.getImage())
-                .into(new SimpleTarget<Bitmap>() {
-                    @Override
-                    public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
-                        startMarker.setIcon(new BitmapDrawable(context.getResources(), createUserBitmap(chunk, resource)));
-                        startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_TOP);
-                        startMarker.setInfoWindow(new ChunkInfoWindow(map, resource, chunk));
-                        map.getOverlays().add(startMarker);
-                    }
-                });
+    public void createMarkerChunk(final Chunk chunk) {
+        Pair<Double, Double> key_chunk = new Pair<>( chunk.getLatitude(), chunk.getLongitude());
+        ArrayList<Chunk> list_chunk = mapOfChunk.get(key_chunk);
+        if(list_chunk == null)
+        {
+            final  ArrayList<Chunk> final_list_chunk = new ArrayList<>();
+            final_list_chunk.add(chunk);
+            mapOfChunk.put(key_chunk, final_list_chunk);
+            GeoPoint locationOnMap = new GeoPoint(chunk.getLatitude(), chunk.getLongitude());
+            final Marker startMarker = new Marker(map);
+            startMarker.setPosition(locationOnMap);
+            Glide.with(context)
+                    .asBitmap()
+                    .load(chunk.getImage())
+                    .into(new SimpleTarget<Bitmap>() {
+                        @Override
+                        public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
+                            startMarker.setIcon(new BitmapDrawable(context.getResources(), createUserBitmap(chunk, resource)));
+                            startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_TOP);
+                            startMarker.setOnMarkerClickListener(new Marker.OnMarkerClickListener() {
+                                @Override
+                                public boolean onMarkerClick(Marker marker, MapView mapView) {
+                                    Intent intent = new Intent(getContext(), ShowChunksFromMarker.class);
+                                    Bundle bundle = new Bundle();
+                                    bundle.putParcelableArrayList(ShowChunksFromMarker.LIST_OF_CHUNK, final_list_chunk);
+                                    intent.putExtras(bundle);
+                                    getContext().startActivity(intent);
+                                    return true;
+                                }
+                            });
+                            map.getOverlays().add(startMarker);
+                        }
+                    });
+        }else{
+            list_chunk.add(chunk);
+        }
 
-        return startMarker;
+
     }
 
     public int dp(float value) {

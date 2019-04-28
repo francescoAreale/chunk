@@ -18,6 +18,7 @@
         android:roundIcon="@drawable/chunk_icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".ShowChunksFromMarker"></activity>
         <activity android:name=".SignInActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

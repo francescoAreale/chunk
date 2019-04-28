@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:nextFocusForward="@+id/imageSingleChunk">
+    <android.support.v7.widget.CardView
+        android:id="@+id/cv_About"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:elevation="3dp"
+        app:cardCornerRadius="0dp"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/imageSingleChunk"
+                android:layout_width="60dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:contentDescription="@string/image_user_sent"
+                android:nextFocusForward="@+id/TitleChat"
+                android:src="@drawable/ic_account_circle_black_36dp" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/TitleChat"
+                    android:layout_width="210dp"
+                    android:layout_height="35dp"
+                    android:contentDescription="@string/name_user_sent"
+                    android:nextFocusForward="@+id/messageTextView"
+                    android:paddingHorizontal="10dp"
+                    android:paddingStart="5dp"
+                    android:paddingTop="5dp"
+                    android:paddingEnd="10dp"
+                    android:text="@string/name_contact"
+                    android:textStyle="bold"
+                    android:textColor="@color/colorName"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/messageTextView"
+                    android:layout_width="210dp"
+                    android:layout_height="match_parent"
+                    android:contentDescription="@string/message_user_sent"
+                    android:elevation="10dp"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="2dp"
+                    android:paddingBottom="10dp"
+                    android:text="@string/message_preview_chat"
+                    android:textSize="15sp" />
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/no_sound_icon"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_gravity="top"
+                android:layout_marginTop="5dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:src="@drawable/no_sound" />
+
+            <TextView
+                android:id="@+id/new_message"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_gravity="top|right"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="7dp"
+                android:background="@drawable/green_circle"
+                android:contentDescription="@string/message_user_sent"
+                android:paddingHorizontal="3dp"
+                android:paddingVertical="6dp"
+                android:text="New"
+                android:textColor="@color/colorWhite"
+                android:textSize="9sp" />
+
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+</android.support.constraint.ConstraintLayout>
