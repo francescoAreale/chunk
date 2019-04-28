@@ -75,6 +75,7 @@
             android:inputType="text"
             android:paddingHorizontal="10dp"
             android:singleLine="false"
+            android:maxLength="20"
             android:layout_marginTop="10dp"
             android:text=""
             android:nextFocusForward="@+id/positionChunk"/>

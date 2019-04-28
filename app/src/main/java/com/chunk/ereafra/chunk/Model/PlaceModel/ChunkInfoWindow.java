@@ -81,14 +81,7 @@ public class ChunkInfoWindow extends InfoWindow implements GetChatFromIDInterfac
 
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(mView.getContext(), ChunkChatActivity.class);
-                Bundle b = new Bundle();
-                b.putParcelable(ChunkChatActivity.ID_OF_CHAT, chat); //Your id
-                intent.putExtras(b); //Put your id to your next Intent
-                mView.getContext().startActivity(intent);
-                FirebaseUtils.addChatToUser(User.getInstance().getmFirebaseUser().getUid(),
-                        chunk.getChatOfChunkID());
-                FirebaseUtils.registerTopic(chunk.getChatOfChunkID());
+
             }
         });
 

@@ -31,7 +31,6 @@ public class ShowImageFull extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_image_full);
         imageToDisplay = findViewById(R.id.imageChunk);
-        chunkImageView = findViewById(R.id.chunk_image);
         titleChunk = findViewById(R.id.title_chunk);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -46,10 +45,6 @@ public class ShowImageFull extends AppCompatActivity {
         Glide.with(this)
                 .load(imageDisplayed)
                 .into(imageToDisplay);
-
-        Glide.with(this)
-                .load(imageUser)
-                .into(chunkImageView);
 
         titleChunk.setText(titleChunkToShow);
        // imageToDisplay.setImageBitmap(bmp );

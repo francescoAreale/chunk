@@ -17,15 +17,8 @@
             android:background="@null"
             >
 
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/chunk_image"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:contentDescription="@string/image_chunk"/>
-
             <TextView
                 android:id="@+id/title_chunk"
-                android:layout_marginStart="50dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="25sp"
@@ -43,22 +36,5 @@
         android:scaleType="centerCrop"
         android:src="@drawable/new_pic"
         android:contentDescription="@string/insert_new_chunk_image"/>
-
-    <Button
-        android:id="@+id/bubble_moreinfo"
-        android:layout_width="238dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_centerVertical="true"
-        android:layout_marginStart="100dp"
-        android:layout_marginEnd="100dp"
-        android:layout_marginBottom="50dp"
-        android:layout_weight="1"
-        android:background="@drawable/customborder"
-        android:contentDescription="@string/button_info_window"
-        android:text="@string/button_info_window"
-        android:visibility="visible" />
 
 </RelativeLayout>
