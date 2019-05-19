@@ -1,6 +1,7 @@
 package com.chunk.ereafra.chunk;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -34,8 +35,10 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.chunk.ereafra.chunk.Model.Entity.Chunk;
 import com.chunk.ereafra.chunk.Model.PlaceModel.Place;
+import com.chunk.ereafra.chunk.Utils.FirebaseUtils;
 import com.chunk.ereafra.chunk.Utils.GPSutils;
 import com.chunk.ereafra.chunk.Utils.NetworkUtils;
+import com.github.loadingview.LoadingDialog;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -54,7 +57,7 @@ import static com.chunk.ereafra.chunk.Utils.FirebaseUtils.insertChunkOnDB;
 import static com.chunk.ereafra.chunk.Utils.GPSutils.MY_PERMISSIONS_REQUEST_LOCATION;
 
 
-public class NewChunk extends AppCompatActivity {
+public class NewChunk extends AppCompatActivity implements FirebaseUtils.CallbackChunkReady {
 
     MapView map = null;
     private static final String TAG = "NewChunk";
@@ -71,6 +74,7 @@ public class NewChunk extends AppCompatActivity {
     ImageView imagePic;
     ImageButton commitButton = null;
     FloatingActionButton positionButton = null;
+    private LoadingDialog dialog;
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
@@ -214,7 +218,7 @@ public class NewChunk extends AppCompatActivity {
                 map.getMapCenter().getLongitude(),
                 null, null);
 
-        insertChunkOnDB(newChunk, imagePicURI);
+        insertChunkOnDB(newChunk, imagePicURI, this);
         return true;
     }
 
@@ -227,8 +231,9 @@ public class NewChunk extends AppCompatActivity {
         commitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (commitOnFirebase())
-                    finish();
+                commitOnFirebase();
+                dialog = LoadingDialog.Companion.get((Activity)v.getContext()).show();
+
             }
         });
     }
@@ -286,4 +291,9 @@ public class NewChunk extends AppCompatActivity {
 
     }
 
+    @Override
+    public void chunkIsReady() {
+        dialog.hide();
+        finish();
+    }
 }

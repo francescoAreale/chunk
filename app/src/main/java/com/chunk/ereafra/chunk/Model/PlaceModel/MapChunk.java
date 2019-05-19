@@ -273,7 +273,7 @@ public class MapChunk implements VisualizeChunkInterface<Chunk> {
             GeoPoint locationOnMap = new GeoPoint(chunk.getLatitude(), chunk.getLongitude());
             final Marker startMarker = new Marker(map);
             startMarker.setPosition(locationOnMap);
-            Glide.with(context)
+            Glide.with(getContext())
                     .asBitmap()
                     .load(chunk.getImage())
                     .into(new SimpleTarget<Bitmap>() {

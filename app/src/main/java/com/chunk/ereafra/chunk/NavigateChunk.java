@@ -120,7 +120,7 @@ public class NavigateChunk extends AppCompatActivity implements GoogleApiClient.
                                   public void run() {
                                       pbar.setVisibility(View.INVISIBLE);
                                       mapChunk.setMapToCenter();
-                                      mapChunk.loadCurrentChunkOnActualPosition();
+                                     // mapChunk.loadCurrentChunkOnActualPosition();
                                   }
                               });
 
@@ -169,6 +169,7 @@ public class NavigateChunk extends AppCompatActivity implements GoogleApiClient.
         if (id == R.id.addChunk) {
             // do something here
             startActivity(new Intent(NavigateChunk.this, NewChunk.class));
+
         }
         if (id == R.id.your_chunk)
             startActivity(new Intent(NavigateChunk.this, PersonalChunks.class));
@@ -196,7 +197,11 @@ public class NavigateChunk extends AppCompatActivity implements GoogleApiClient.
         //Configuration.getInstance().load(this, PreferenceManager.getDefaultSharedPreferences(this));
 
         if(mapChunk!=null)
-            mapChunk.getMap().onResume(); //needed for compass, my location overlays, v6.0.0 and up
+        {
+            mapChunk.getMap().onResume();
+            mapChunk.loadCurrentChunkOnActualPosition();
+        }
+            //needed for compass, my location overlays, v6.0.0 and up
     }
 
     public void onPause(){
@@ -205,6 +210,7 @@ public class NavigateChunk extends AppCompatActivity implements GoogleApiClient.
         //if you make changes to the configuration, use
         //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         //Configuration.getInstance().save(this, prefs);
+        FirebaseUtils.stopGeoListening();
         if(mapChunk!=null)
             mapChunk.getMap().onPause();  //needed for compass, my location overlays, v6.0.0 and up
     }

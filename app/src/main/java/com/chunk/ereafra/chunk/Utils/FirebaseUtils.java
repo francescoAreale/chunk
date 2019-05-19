@@ -57,13 +57,20 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
+
+
 public class FirebaseUtils {
+
+    public interface CallbackChunkReady {
+        void chunkIsReady();
+    }
 
     public static String TAG = "Firebase Util Static CLASS";
     private static String CHUNK_POSITION = "chunk_position";
     private static String CHUNK_TITLE = "chunk";
     public static final String CHAT_USERS = "users_chat";
     public static String CHAT_TITLE = "chat";
+    static GeoQuery geoQuery = null;
     public static void insertFirebaseLocation(GeoLocation geo, String IDChunk) {
 
         GeoFire geoFire = new GeoFire(FirebaseDatabase.getInstance().getReference(CHUNK_POSITION));
@@ -201,17 +208,25 @@ public class FirebaseUtils {
         });
     }
 
+    public static void stopGeoListening()
+    {
+        if(geoQuery!=null)
+            geoQuery.removeAllListeners();
+    }
+
 
     public static void getChunkAroundLocation(double latitude, double longitude,
                                               double radiuskm, final VisualizeChunkInterface<Chunk> objectVisualizer) {
 
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference(CHUNK_POSITION);
-        GeoFire geoFire = new GeoFire(ref);
-        final GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(latitude, longitude), radiuskm);
+        final GeoFire geoFire = new GeoFire(ref);
+         geoQuery = geoFire.queryAtLocation(new GeoLocation(latitude, longitude), radiuskm);
+
         geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
             @Override
             public void onKeyEntered(String key, GeoLocation location) {
                 getChunkFromID(key, objectVisualizer);
+                geoQuery.removeAllListeners();
             }
 
             @Override
@@ -237,7 +252,7 @@ public class FirebaseUtils {
 
     }
 
-    public static void insertChunkOnDB(final Chunk newChunk, final Uri imagePicURI) {
+    public static void insertChunkOnDB(final Chunk newChunk, final Uri imagePicURI, final CallbackChunkReady readyCallBack) {
 
         FirebaseDatabase.getInstance().getReference().child(CHUNK_TITLE).push()
                 .setValue(newChunk, new DatabaseReference.CompletionListener() {
@@ -252,7 +267,7 @@ public class FirebaseUtils {
                                             .child(key)
                                             .child(imagePicURI.getLastPathSegment());
                             insertFirebaseLocation(new GeoLocation(newChunk.getLatitude(), newChunk.getLongitude()), key);
-                            putImageInStorage(storageReference, imagePicURI, key, newChunk);
+                            putImageInStorage(storageReference, imagePicURI, key, newChunk, readyCallBack);
 
                         } else {
                             Log.w(TAG, "Unable to write message to database.",
@@ -268,7 +283,7 @@ public class FirebaseUtils {
                 .setValue(chat);
     }
 
-    public static void createChatOnFirebase(final String idChunk, final Chunk newChunk) {
+    public static void createChatOnFirebase(final String idChunk, final Chunk newChunk, final CallbackChunkReady readyChunk) {
         Chat newChat = new Chat(null, "No Message Until Now", (System.currentTimeMillis() / 1000),
                 newChunk.getChunkName(), newChunk.getImage());
         FirebaseDatabase.getInstance().getReference().child(CHAT_TITLE).push()
@@ -283,6 +298,7 @@ public class FirebaseUtils {
                                     .setValue(newChunk);
                             FirebaseUtils.addChatToUser(User.getInstance().getmFirebaseUser().getUid(), key);
                             FirebaseUtils.registerTopic(key);
+                            readyChunk.chunkIsReady();
                         } else {
                             Log.w(TAG, "Unable to write message to database.",
                                     databaseError.toException());
@@ -291,7 +307,7 @@ public class FirebaseUtils {
                 });
     }
 
-    public static void putImageInStorage(final StorageReference storageReference, Uri uri, final String key, final Chunk newChunk) {
+    public static void putImageInStorage(final StorageReference storageReference, Uri uri, final String key, final Chunk newChunk, final CallbackChunkReady readyCallBack) {
         storageReference.putFile(uri).continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
             @Override
             public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
@@ -308,7 +324,7 @@ public class FirebaseUtils {
                     newChunk.setImage(downUri.toString());
                     FirebaseDatabase.getInstance().getReference().child(CHUNK_TITLE).child(key)
                             .setValue(newChunk);
-                    createChatOnFirebase(key, newChunk);
+                    createChatOnFirebase(key, newChunk, readyCallBack);
                     Log.d(TAG, "the image CHUNK has been loaded in the database");
                 }
             }
