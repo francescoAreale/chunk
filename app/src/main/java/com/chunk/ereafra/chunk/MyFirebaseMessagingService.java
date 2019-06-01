@@ -139,7 +139,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService impleme
                             NotificationCompat.Builder notificationBuilder =
                                     new NotificationCompat.Builder(getApplicationContext(), ADMIN_CHANNEL_ID)
                                             .setLargeIcon(getCircleBitmap(resource.copy(resource.getConfig(), true)))
-                                            .setSmallIcon(R.drawable.chunk_icon)
+                                            .setSmallIcon(R.mipmap.ic_launcher_foreground)
                                             .setContentTitle(chat.getTitleChat())
                                             .setContentText(chat.getLastMessage())
                                             .setAutoCancel(true)
@@ -163,13 +163,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService impleme
     }
 
     private Bitmap getCircleBitmap(Bitmap bitmap) {
-        final Bitmap output = Bitmap.createBitmap(bitmap.getWidth(),
-                bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        final Bitmap output = Bitmap.createBitmap(bitmap.getWidth()+250,
+                bitmap.getHeight()+250, Bitmap.Config.ARGB_8888);
         final Canvas canvas = new Canvas(output);
 
         final int color = Color.RED;
         final Paint paint = new Paint();
-        final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+        final Rect rect = new Rect(0, 0, bitmap.getWidth()+250, bitmap.getHeight()+250);
         final RectF rectF = new RectF(rect);
 
         paint.setAntiAlias(true);

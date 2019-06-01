@@ -219,6 +219,8 @@ public class NewChunk extends AppCompatActivity implements FirebaseUtils.Callbac
                 null, null);
 
         insertChunkOnDB(newChunk, imagePicURI, this);
+        finish();
+
         return true;
     }
 
@@ -293,7 +295,7 @@ public class NewChunk extends AppCompatActivity implements FirebaseUtils.Callbac
 
     @Override
     public void chunkIsReady() {
-        dialog.hide();
-        finish();
+        //dialog.hide();
+
     }
 }

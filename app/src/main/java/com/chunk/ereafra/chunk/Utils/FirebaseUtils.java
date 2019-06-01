@@ -71,6 +71,7 @@ public class FirebaseUtils {
     public static final String CHAT_USERS = "users_chat";
     public static String CHAT_TITLE = "chat";
     static GeoQuery geoQuery = null;
+    final Object mutex = new Object();
     public static void insertFirebaseLocation(GeoLocation geo, String IDChunk) {
 
         GeoFire geoFire = new GeoFire(FirebaseDatabase.getInstance().getReference(CHUNK_POSITION));
@@ -266,7 +267,6 @@ public class FirebaseUtils {
                                             .getReference(User.getInstance().getmFirebaseUser().getUid())
                                             .child(key)
                                             .child(imagePicURI.getLastPathSegment());
-                            insertFirebaseLocation(new GeoLocation(newChunk.getLatitude(), newChunk.getLongitude()), key);
                             putImageInStorage(storageReference, imagePicURI, key, newChunk, readyCallBack);
 
                         } else {
@@ -296,6 +296,7 @@ public class FirebaseUtils {
                             newChunk.setChatOfChunkID(key);
                             FirebaseDatabase.getInstance().getReference().child(CHUNK_TITLE).child(idChunk)
                                     .setValue(newChunk);
+                            insertFirebaseLocation(new GeoLocation(newChunk.getLatitude(), newChunk.getLongitude()), idChunk);
                             FirebaseUtils.addChatToUser(User.getInstance().getmFirebaseUser().getUid(), key);
                             FirebaseUtils.registerTopic(key);
                             readyChunk.chunkIsReady();

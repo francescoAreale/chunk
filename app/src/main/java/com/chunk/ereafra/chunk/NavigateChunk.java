@@ -120,7 +120,7 @@ public class NavigateChunk extends AppCompatActivity implements GoogleApiClient.
                                   public void run() {
                                       pbar.setVisibility(View.INVISIBLE);
                                       mapChunk.setMapToCenter();
-                                     // mapChunk.loadCurrentChunkOnActualPosition();
+                                      mapChunk.loadCurrentChunkOnActualPosition();
                                   }
                               });
 
@@ -129,6 +129,7 @@ public class NavigateChunk extends AppCompatActivity implements GoogleApiClient.
 
        // if(mapChunk.getmLocationOverlay().getMyLocation()==null)
          mapChunk.parseCoordinatesReceived();
+         mapChunk.loadCurrentChunkOnActualPosition();
 
         final AutoCompleteTextView countrySearch = (AutoCompleteTextView) findViewById(R.id.search);
         final AutoCompleteAdapter adapter = new AutoCompleteAdapter(this,android.R.layout.simple_dropdown_item_1line);
@@ -195,11 +196,10 @@ public class NavigateChunk extends AppCompatActivity implements GoogleApiClient.
         //if you make changes to the configuration, use
         //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         //Configuration.getInstance().load(this, PreferenceManager.getDefaultSharedPreferences(this));
-
         if(mapChunk!=null)
         {
             mapChunk.getMap().onResume();
-            mapChunk.loadCurrentChunkOnActualPosition();
+            //mapChunk.loadCurrentChunkOnActualPosition();
         }
             //needed for compass, my location overlays, v6.0.0 and up
     }
@@ -210,8 +210,9 @@ public class NavigateChunk extends AppCompatActivity implements GoogleApiClient.
         //if you make changes to the configuration, use
         //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         //Configuration.getInstance().save(this, prefs);
-        FirebaseUtils.stopGeoListening();
+
         if(mapChunk!=null)
             mapChunk.getMap().onPause();  //needed for compass, my location overlays, v6.0.0 and up
+            //baseUtils.stopGeoListening();
     }
 }

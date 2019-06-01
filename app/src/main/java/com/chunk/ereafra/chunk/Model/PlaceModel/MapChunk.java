@@ -155,8 +155,8 @@ public class MapChunk implements VisualizeChunkInterface<Chunk> {
 
 
     public void parseCoordinatesReceived() {
-
-// Request a string response from the provided URL.
+    // this function get the address coordinate from the internet
+// Request a string response from the provided URL .
         StringRequest stringRequest = new StringRequest(Request.Method.GET,
                 "https://ipapi.co/json/",
                 new Response.Listener<String>() {
@@ -169,7 +169,7 @@ public class MapChunk implements VisualizeChunkInterface<Chunk> {
                         AddressFromNetwork addr = new Gson().fromJson(response, type);
                         if(getmLocationOverlay().getMyLocation()==null) {
                             setCenterOnTheMap(addr.getLatitude(), addr.getLongitude());
-                            loadCurrentChunkOnCenterPosition();
+                            //loadCurrentChunkOnCenterPosition();
                         }
                     }
                 }, new Response.ErrorListener() {
