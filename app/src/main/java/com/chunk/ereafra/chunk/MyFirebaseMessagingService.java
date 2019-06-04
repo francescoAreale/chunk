@@ -31,18 +31,11 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.chunk.ereafra.chunk.Model.ChatModel.Chat;
 import com.chunk.ereafra.chunk.Model.Interface.GetChatFromIDInterface;
-import com.chunk.ereafra.chunk.Model.PlaceModel.ChunkInfoWindow;
 import com.chunk.ereafra.chunk.Utils.FirebaseUtils;
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.iid.FirebaseInstanceIdService;
+
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
-import org.osmdroid.views.overlay.Marker;
-
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.Random;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService implements GetChatFromIDInterface<Chat> {

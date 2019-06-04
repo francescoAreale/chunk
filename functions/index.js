@@ -30,3 +30,22 @@ exports.sendFollowerNotification = functions.database.ref('/chat/{id_of_chunk}/'
             });
     });
 
+exports.translateMessage = functions.https.onCall((data, context) => {
+  // Message text passed from the client.
+	const text = data.text;
+// Authentication / user information is automatically added to the request.
+	const uid = context.auth.uid;
+	const name = context.auth.token.name || null;
+	const picture = context.auth.token.picture || null;
+	const email = context.auth.token.email || null;
+	console.log('the user is is:', text);
+	return admin.auth().getUser(text)
+		.then((userRecord) => {
+    	// See the UserRecord reference doc for the contents of userRecord.
+    		console.log('Successfully fetched user data:', userRecord['displayName']);
+		return userRecord.displayName;
+  	})
+  	.catch((error) => {
+    		console.log('Error fetching user data:', error);
+  	});
+});

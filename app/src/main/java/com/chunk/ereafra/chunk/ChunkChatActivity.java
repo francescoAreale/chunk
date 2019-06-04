@@ -47,14 +47,21 @@ import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.functions.FirebaseFunctions;
+import com.google.firebase.functions.FirebaseFunctionsException;
+import com.google.firebase.functions.HttpsCallableResult;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -143,14 +150,35 @@ public class ChunkChatActivity extends AppCompatActivity implements GoogleApiCli
             public MessageViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
                 LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
                 MessageChat chat = this.getItem(i);
-                if (chat.getName().equals(User.getInstance().getUserName()))
+                if (chat.getName().equals(User.getInstance().getmFirebaseUser().getUid()))
                     return new MessageViewHolder(inflater.inflate(R.layout.my_message, viewGroup, false), true);
                 else
                     return new MessageViewHolder(inflater.inflate(R.layout.message_item, viewGroup, false), false);
             }
 
+            // [START function_add_message]
+            private Task<String> addMessage(String text) {
+                // Create the arguments to the callable function.
+                Map<String, Object> data = new HashMap<>();
+                data.put("text", text);
+                data.put("push", true);
 
-            public void bindOtherViewHolder(final MessageViewHolder holder, MessageChat message) {
+                return  FirebaseFunctions.getInstance()
+                        .getHttpsCallable("translateMessage")
+                        .call(data)
+                        .continueWith(new Continuation<HttpsCallableResult, String>() {
+                            @Override
+                            public String then(@NonNull Task<HttpsCallableResult> task) throws Exception {
+                                // This continuation runs on either success or failure, but if the task
+                                // has failed then getResult() will throw an Exception which will be
+                                // propagated down.
+                                String result = (String) task.getResult().getData();
+                                return result;
+                            }
+                        });
+            }
+
+            public void bindOtherViewHolder(final MessageViewHolder holder, MessageChat message) throws FirebaseAuthException {
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                 SharedPreferences.Editor editor = prefs.edit();
                 if(this.getItem(this.getItemCount()-1).getText() != null)
@@ -201,8 +229,34 @@ public class ChunkChatActivity extends AppCompatActivity implements GoogleApiCli
                     holder.messageTextView.setVisibility(TextView.GONE);
                 }
 
-                if (!message.getName().equals(User.getInstance().getUserName())) {
-                    holder.messengerTextView.setText(message.getName());
+                if (!message.getName().equals(User.getInstance().getmFirebaseUser().getUid())) {
+
+                    addMessage(message.getName())
+                            .addOnCompleteListener(new OnCompleteListener<String>() {
+                                @Override
+                                public void onComplete(@NonNull Task<String> task) {
+                                    if (!task.isSuccessful()) {
+                                        Exception e = task.getException();
+                                        if (e instanceof FirebaseFunctionsException) {
+                                            FirebaseFunctionsException ffe = (FirebaseFunctionsException) e;
+                                            FirebaseFunctionsException.Code code = ffe.getCode();
+                                            Object details = ffe.getDetails();
+                                        }
+
+                                        // [START_EXCLUDE]
+                                        Log.w(TAG, "addMessage:onFailure", e);
+                                        return;
+                                        // [END_EXCLUDE]
+                                    }
+
+                                    // [START_EXCLUDE]
+                                    String result = task.getResult();
+                                    holder.messengerTextView.setText(result);
+
+                                    // [END_EXCLUDE]
+                                }
+                            });
+
                     if (message.getPhotoUrl() == null) {
                         holder.messengerImageView.setImageDrawable(ContextCompat.getDrawable(ChunkChatActivity.this,
                                 R.drawable.ic_account_circle_black_36dp));
@@ -218,7 +272,11 @@ public class ChunkChatActivity extends AppCompatActivity implements GoogleApiCli
             protected void onBindViewHolder(@NonNull MessageViewHolder holder, int position, @NonNull MessageChat message) {
                 mProgressBar.setVisibility(ProgressBar.INVISIBLE);
                 noMessageText.setVisibility(View.INVISIBLE);
-                bindOtherViewHolder(holder, message);
+                try {
+                    bindOtherViewHolder(holder, message);
+                } catch (FirebaseAuthException e) {
+                    e.printStackTrace();
+                }
             }
 
 
@@ -335,7 +393,7 @@ public class ChunkChatActivity extends AppCompatActivity implements GoogleApiCli
             public void onClick(View view) {
                 MessageChat friendlyMessage = new
                         MessageChat(mMessageEditText.getText().toString(),
-                        User.getInstance().getUserName(),
+                        User.getInstance().getmFirebaseUser().getUid(),
                         User.getInstance().getPhotoUser(),
                         null /* no image */);
                 mFirebaseDatabaseReference.child(MESSAGES_CHILD).child(chat.getId())
@@ -409,8 +467,7 @@ public class ChunkChatActivity extends AppCompatActivity implements GoogleApiCli
                 if (data != null) {
                     final Uri uri = data.getData();
                     Log.d(TAG, "Uri: " + uri.toString());
-
-                    MessageChat tempMessage = new MessageChat(null, User.getInstance().getUserName(), User.getInstance().getPhotoUser(),
+                    MessageChat tempMessage = new MessageChat(null, User.getInstance().getmFirebaseUser().getUid(), User.getInstance().getPhotoUser(),
                             LOADING_IMAGE_URL);
                     mFirebaseDatabaseReference.child(MESSAGES_CHILD).child(chat.getId()).push()
                             .setValue(tempMessage, new DatabaseReference.CompletionListener() {
@@ -483,7 +540,7 @@ public class ChunkChatActivity extends AppCompatActivity implements GoogleApiCli
                 if (task.isSuccessful()) {
                     Uri downUri = task.getResult();
                     MessageChat friendlyMessage =
-                            new MessageChat(null, User.getInstance().getUserName(), User.getInstance().getPhotoUser(),
+                            new MessageChat(null, User.getInstance().getmFirebaseUser().getUid(), User.getInstance().getPhotoUser(),
                                     downUri.toString());
                     mFirebaseDatabaseReference.child(MESSAGES_CHILD).child(chat.getId()).child(key)
                             .setValue(friendlyMessage);

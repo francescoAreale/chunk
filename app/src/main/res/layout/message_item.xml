@@ -35,7 +35,6 @@
             android:paddingEnd="5dp"
             android:paddingTop="5dp"
             android:paddingBottom="2dp"
-            android:text="@string/name_contact"
             android:textColor="@color/colorName"
             android:contentDescription="@string/name_user_sent"
             android:nextFocusForward="@+id/messageTextView"
